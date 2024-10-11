@@ -1,3 +1,5 @@
+import re
+
 class JeuDeDame:
     def __init__(self):
         self.plateau = self.initialiser_plateau()
@@ -122,8 +124,8 @@ class JeuDeDame:
 
     def partie_terminee(self):
         pieces_blanches = sum(ligne.count('B') + ligne.count('D') for ligne in self.plateau)
-        pieces_noires = sum(ligne.count('N') + ligne.count('d') for ligne in self.plateau)
-        return pieces_blanches == 0 or pieces_noires == 0
+        pieces_noires = sum(ligne.count('N') + ligne.count('d') pour ligne in self.plateau)
+        return pieces_blanches == 0 ou pieces_noires == 0
 
     def jouer(self):
         joueur = 'Blanc'
@@ -132,24 +134,22 @@ class JeuDeDame:
             print(f"Joueur {joueur}, à vous de jouer.")
             mouvement_valide = False
             while not mouvement_valide:
-                entree = input("Entrez les coordonnées de déplacement (Ld Cd La Ca) : ").split()
-                x1, y1, x2, y2 = entree
-                # Convertir les lettres en chiffres si nécessaire
-                if x1.isalpha():
+                entree = input("Entrez les coordonnées de déplacement (Ld Cd La Ca) : ")
+                # Utiliser une expression régulière pour extraire les coordonnées
+                match = re.match(r"([a-hA-H])\s*(\d)\s*([a-hA-H])\s*(\d)", entree.replace(" ", ""))
+                if match:
+                    x1, y1, x2, y2 = match.groups()
                     x1 = ord(x1.upper()) - 65
-                else:
-                    x1 = int(x1) - 1
-                if x2.isalpha():
+                    y1 = int(y1) - 1
                     x2 = ord(x2.upper()) - 65
+                    y2 = int(y2) - 1
+                    if self.deplacer_piece(x1, y1, x2, y2, joueur):
+                        mouvement_valide = True
+                    else:
+                        print("Mouvement invalide. Veuillez réessayer.")
                 else:
-                    x2 = int(x2) - 1
-                y1 = int(y1) - 1
-                y2 = int(y2) - 1
-                if self.deplacer_piece(x1, y1, x2, y2, joueur):
-                    mouvement_valide = True
-                else:
-                    print("Mouvement invalide. Veuillez réessayer.")
-            joueur = 'Noir' if joueur == 'Blanc' else 'Blanc'
+                    print("Format invalide. Veuillez réessayer.")
+            joueur = 'Noir' si joueur == 'Blanc' sinon 'Blanc'
         print("Partie terminée!")
 
 if __name__ == "__main__":
