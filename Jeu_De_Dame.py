@@ -35,21 +35,24 @@ class JeuDeDame:
                 self.afficher_plateau()
                 print(f"Prises multiples possibles pour {joueur}.")
                 x1, y1 = x2, y2
-                entree = input("Entrez les nouvelles coordonnées de déplacement (La Ca) : ").split()
-                x2, y2 = entree
-                # Convertir les lettres en chiffres si nécessaire
-                if x2.isalpha():
-                    x2 = ord(x2.upper()) - 65
-                else:
-                    x2 = int(x2) - 1
-                y2 = int(y2) - 1
-                if self.mouvement_valide(x1, y1, x2, y2):
-                    self.plateau[x2][y2] = self.plateau[x1][y1]
-                    self.plateau[x1][y1] = ' '
-                    self.verifier_capture(x1, y1, x2, y2)
-                    self.promouvoir_dame(x2, y2)
-                else:
-                    print("Mouvement invalide. Veuillez réessayer.")
+                mouvement_valide = False
+                while not mouvement_valide:
+                    entree = input("Entrez les nouvelles coordonnées de déplacement (La Ca) : ")
+                    match = re.match(r"([a-hA-H])\s*(\d)", entree.replace(" ", ""))
+                    if match:
+                        x2, y2 = match.groups()
+                        x2 = ord(x2.upper()) - 65
+                        y2 = int(y2) - 1
+                        if self.mouvement_valide(x1, y1, x2, y2):
+                            self.plateau[x2][y2] = self.plateau[x1][y1]
+                            self.plateau[x1][y1] = ' '
+                            self.verifier_capture(x1, y1, x2, y2)
+                            self.promouvoir_dame(x2, y2)
+                            mouvement_valide = True
+                        else:
+                            print("Mouvement invalide. Veuillez réessayer.")
+                    else:
+                        print("Format invalide. Veuillez réessayer.")
             return True
         return False
 
@@ -124,8 +127,8 @@ class JeuDeDame:
 
     def partie_terminee(self):
         pieces_blanches = sum(ligne.count('B') + ligne.count('D') for ligne in self.plateau)
-        pieces_noires = sum(ligne.count('N') + ligne.count('d') pour ligne in self.plateau)
-        return pieces_blanches == 0 ou pieces_noires == 0
+        pieces_noires = sum(ligne.count('N') + ligne.count('d') for ligne in self.plateau)
+        return pieces_blanches == 0 or pieces_noires == 0
 
     def jouer(self):
         joueur = 'Blanc'
@@ -149,7 +152,7 @@ class JeuDeDame:
                         print("Mouvement invalide. Veuillez réessayer.")
                 else:
                     print("Format invalide. Veuillez réessayer.")
-            joueur = 'Noir' si joueur == 'Blanc' sinon 'Blanc'
+            joueur = 'Noir' if joueur == 'Blanc' else 'Blanc'
         print("Partie terminée!")
 
 if __name__ == "__main__":
