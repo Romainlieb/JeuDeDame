@@ -514,7 +514,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 630283309533402621, guid: b3f180c21fc1984438bebefc51b947c3, type: 3}
       propertyPath: m_Name
-      value: Dames
+      value: Plateau
       objectReference: {fileID: 0}
     - target: {fileID: 3045843521218463165, guid: b3f180c21fc1984438bebefc51b947c3, type: 3}
       propertyPath: m_LocalPosition.x

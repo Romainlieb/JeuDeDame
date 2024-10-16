@@ -1,16 +1,21 @@
 using UnityEngine;
 
-public class NewMonoBehaviourScript : MonoBehaviour
+public class Tile : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public bool IsBlack { get; private set; }
+    public bool IsOccupied { get; private set; }
+    public char Piece { get; private set; }
+
+    public void Initialize(bool isBlack, char piece)
     {
-        
+        IsBlack = isBlack;
+        Piece = piece;
+        IsOccupied = piece != ' ';
     }
 
-    // Update is called once per frame
-    void Update()
+    public void SetPiece(char piece)
     {
-        
+        Piece = piece;
+        IsOccupied = piece != ' ';
     }
 }
