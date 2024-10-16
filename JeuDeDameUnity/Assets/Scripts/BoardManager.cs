@@ -20,27 +20,40 @@ public class BoardManager : MonoBehaviour
                 // Instantiate the tile prefab
                 GameObject tileObject = Instantiate(tilePrefab, new Vector3(j, 0, i), Quaternion.identity);
                 Tile tile = tileObject.GetComponent<Tile>();
-
                 // Determine if the tile should be black or white
                 bool isBlack = (i + j) % 2 == 1;
-                char piece = ' ';
-
+                Piece.PieceColor pieceColor = Piece.PieceColor.Blanc;
+                Piece.PieceType pieceType = Piece.PieceType.Pion;
+                bool hasPiece = false;
+    
                 // Place les pièces blanches et noires
                 if ((i % 2) != (j % 2))
                 {
                     if (i < 3)
                     {
-                        piece = 'B'; // Pièces blanches
+                        pieceColor = Piece.PieceColor.Blanc;
+                        hasPiece = true;
                     }
                     else if (i > 4)
                     {
-                        piece = 'N'; // Pièces noires
+                        pieceColor = Piece.PieceColor.Noir;
+                        hasPiece = true;
                     }
                 }
-
+    
                 // Initialize the tile
-                tile.Initialize(isBlack, piece);
-
+                tile.Initialize(isBlack, hasPiece ? pieceColor.ToString()[0] : ' ');
+    
+                // Initialize the piece if there is one
+                if (hasPiece)
+                {
+                    GameObject pieceObject = new GameObject("Piece");
+                    Piece piece = pieceObject.AddComponent<Piece>();
+                    piece.Initialize(pieceType, pieceColor);
+                    pieceObject.transform.SetParent(tileObject.transform);
+                    pieceObject.transform.localPosition = Vector3.zero;
+                }
+    
                 // Store the tile in the array
                 plateau[i, j] = tile;
             }
