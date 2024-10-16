@@ -21,6 +21,12 @@ public class Piece : MonoBehaviour
         transform.position = newPosition;
     }
 
+    // Méthode pour promouvoir une pièce en dame
+    public void PromoteToDame()
+    {
+        Type = PieceType.Dame;
+    }
+
     // Start est appelé une fois avant la première exécution de Update après la création du MonoBehaviour
     void Start()
     {

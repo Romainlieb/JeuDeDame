@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3834258887405630424}
   - component: {fileID: 6678881872917163040}
+  - component: {fileID: -1159181819325409050}
+  - component: {fileID: 5413056387264254065}
   m_Layer: 0
   m_Name: PionBlanc_
   m_TagString: PB
@@ -87,3 +89,29 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &-1159181819325409050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3046919137476347246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 763028a27ed64024e8ced662b82085db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  piece: {fileID: 0}
+  boardManager: {fileID: 0}
+--- !u!114 &5413056387264254065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3046919137476347246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29462f3cba93dc340b5341a48d13af43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

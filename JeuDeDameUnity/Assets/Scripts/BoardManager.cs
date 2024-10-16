@@ -2,7 +2,21 @@ using UnityEngine;
 
 public class BoardManager : MonoBehaviour
 {
-    public GameObject tilePrefab; // Prefab for the tile
+    [SerializeField]
+    private GameObject tilePrefab; // Prefab for the tile
+
+    [SerializeField]
+    private GameObject whitePiecePrefab; // Prefab for white piece
+
+    [SerializeField]
+    private GameObject blackPiecePrefab; // Prefab for black piece
+
+    [SerializeField]
+    private GameObject whiteDamePrefab; // Prefab for white dame
+
+    [SerializeField]
+    private GameObject blackDamePrefab; // Prefab for black dame
+
     private Tile[,] plateau = new Tile[8, 8];
 
     void Start()
@@ -47,9 +61,11 @@ public class BoardManager : MonoBehaviour
                 // Initialize the piece if there is one
                 if (hasPiece)
                 {
-                    GameObject pieceObject = new GameObject("Piece");
-                    Piece piece = pieceObject.AddComponent<Piece>();
-                    piece.Initialize(pieceType, pieceColor);
+                    GameObject pieceObject = Instantiate(
+                        pieceColor == Piece.PieceColor.Blanc ? whitePiecePrefab : blackPiecePrefab,
+                        tileObject.transform.position,
+                        Quaternion.identity
+                    );
                     pieceObject.transform.SetParent(tileObject.transform);
                     pieceObject.transform.localPosition = Vector3.zero;
                 }
@@ -111,5 +127,30 @@ public class BoardManager : MonoBehaviour
         char letter = (char)('A' + x);
         int number = y + 1;
         return $"{letter}{number}";
+    }
+
+    public bool IsWithinBounds(Vector2Int position)
+    {
+        return position.x >= 0 && position.x < 8 && position.y >= 0 && position.y < 8;
+    }
+
+    public Piece GetPieceAt(Vector2Int position)
+    {
+        Tile tile = plateau[position.x, position.y];
+        return tile.GetComponentInChildren<Piece>();
+    }
+
+    public void MovePiece(Vector2Int start, Vector2Int end)
+    {
+        Piece piece = GetPieceAt(start);
+        if (piece != null)
+        {
+            Tile startTile = plateau[start.x, start.y];
+            Tile endTile = plateau[end.x, end.y];
+            piece.transform.SetParent(endTile.transform);
+            piece.transform.localPosition = Vector3.zero;
+            startTile.SetPiece(' ');
+            endTile.SetPiece(piece.Color == Piece.PieceColor.Blanc ? 'B' : 'N');
+        }
     }
 }
