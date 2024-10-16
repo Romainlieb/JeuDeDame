@@ -15,7 +15,7 @@ F:/BUT Informatique/Modélisation Mathematique/JeuDeDame/JeuDeDameUnity
 -logFile
 Logs/AssetImportWorker0.log
 -srvPort
-59117
+50456
 -job-worker-count
 5
 -background-job-worker-count
@@ -59,12 +59,12 @@ F:/BUT Informatique/Modélisation Mathematique/JeuDeDame/JeuDeDameUnity
     "memorysetup-temp-allocator-size-gi-baking-worker=262144"
     "memorysetup-temp-allocator-size-gi-baking-worker=262144"
     "memorysetup-temp-allocator-size-gfx=262144"
-Player connection [14340]  Target information:
+Player connection [8364]  Target information:
 
-Player connection [14340]  * "[IP] 172.27.175.77 [Port] 0 [Flags] 2 [Guid] 2428588328 [EditorId] 2428588328 [Version] 1048832 [Id] WindowsEditor(7,LegionR) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+Player connection [8364]  * "[IP] 192.168.180.236 [Port] 0 [Flags] 2 [Guid] 2221501202 [EditorId] 2221501202 [Version] 1048832 [Id] WindowsEditor(7,LegionR) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
 
-Player connection [14340] Host joined multi-casting on [225.0.0.222:54997]...
-Player connection [14340] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Player connection [8364] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [8364] Host joined alternative multi-casting on [225.0.0.222:34997]...
 JobSystem: Creating JobQueue using job-worker-count value 5
 [Physics::Module] Initialized fallback backend.
 [Physics::Module] Id: 0xdecafbad
@@ -75,7 +75,7 @@ Library Redirect Path: Library/
 [Physics::Module] SDK Version: 4.1.2
 [Physics::Module] Integration Version: 1.0.0
 [Physics::Module] Threading Mode: Multi-Threaded
-Refreshing native plugins compatible for Editor in 8.13 ms, found 4 plugins.
+Refreshing native plugins compatible for Editor in 3.43 ms, found 4 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Initialize engine version: 6000.0.22f1 (001fa5a8e29a)
 [Subsystems] Discovering subsystems at path F:/Unity/6000.0.22f1/Editor/Data/Resources/UnitySubsystems
@@ -91,46 +91,46 @@ Initialize mono
 Mono path[0] = 'F:/Unity/6000.0.22f1/Editor/Data/Managed'
 Mono path[1] = 'F:/Unity/6000.0.22f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
 Mono config path = 'F:/Unity/6000.0.22f1/Editor/Data/MonoBleedingEdge/etc'
-Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56984
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56756
 Begin MonoManager ReloadAssembly
 Registering precompiled unity dll's ...
 Register platform support module: F:/Unity/6000.0.22f1/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll
 Register platform support module: F:/Unity/6000.0.22f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
-Registered in 0.004701 seconds.
-- Loaded All Assemblies, in  0.549 seconds
+Registered in 0.007999 seconds.
+- Loaded All Assemblies, in  0.665 seconds
 Native extension for WindowsStandalone target not found
 Native extension for WebGL target not found
 Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  0.924 seconds
-Domain Reload Profiling: 1472ms
-	BeginReloadAssembly (175ms)
+- Finished resetting the current domain, in  0.608 seconds
+Domain Reload Profiling: 1272ms
+	BeginReloadAssembly (240ms)
 		ExecutionOrderSort (0ms)
 		DisableScriptedObjects (0ms)
 		BackupInstance (0ms)
 		ReleaseScriptingObjects (0ms)
 		CreateAndSetChildDomain (1ms)
-	RebuildCommonClasses (54ms)
-	RebuildNativeTypeToScriptingClass (14ms)
-	initialDomainReloadingComplete (63ms)
-	LoadAllAssembliesAndSetupDomain (242ms)
-		LoadAssemblies (174ms)
+	RebuildCommonClasses (70ms)
+	RebuildNativeTypeToScriptingClass (25ms)
+	initialDomainReloadingComplete (79ms)
+	LoadAllAssembliesAndSetupDomain (250ms)
+		LoadAssemblies (239ms)
 		RebuildTransferFunctionScriptingTraits (0ms)
-		AnalyzeDomain (237ms)
-			TypeCache.Refresh (235ms)
-				TypeCache.ScanAssembly (217ms)
+		AnalyzeDomain (245ms)
+			TypeCache.Refresh (243ms)
+				TypeCache.ScanAssembly (222ms)
 			BuildScriptInfoCaches (0ms)
 			ResolveRequiredComponents (1ms)
-	FinalizeReload (924ms)
+	FinalizeReload (609ms)
 		ReleaseScriptCaches (0ms)
 		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (666ms)
+		SetupLoadedEditorAssemblies (531ms)
 			LogAssemblyErrors (0ms)
-			InitializePlatformSupportModulesInManaged (118ms)
-			SetLoadedEditorAssemblies (12ms)
-			BeforeProcessingInitializeOnLoad (20ms)
-			ProcessInitializeOnLoadAttributes (343ms)
-			ProcessInitializeOnLoadMethodAttributes (133ms)
-			AfterProcessingInitializeOnLoad (41ms)
+			InitializePlatformSupportModulesInManaged (42ms)
+			SetLoadedEditorAssemblies (7ms)
+			BeforeProcessingInitializeOnLoad (9ms)
+			ProcessInitializeOnLoadAttributes (339ms)
+			ProcessInitializeOnLoadMethodAttributes (123ms)
+			AfterProcessingInitializeOnLoad (9ms)
 			EditorAssembliesLoaded (0ms)
 		ExecutionOrderSort2 (0ms)
 		AwakeInstancesAfterBackupRestoration (0ms)
@@ -138,146 +138,261 @@ Domain Reload Profiling: 1472ms
 Worker process is ready to serve import requests
 Import Worker Mode flag is 0x00
 Begin MonoManager ReloadAssembly
-- Loaded All Assemblies, in  1.934 seconds
-Refreshing native plugins compatible for Editor in 2.20 ms, found 4 plugins.
+- Loaded All Assemblies, in  1.760 seconds
+Refreshing native plugins compatible for Editor in 2.33 ms, found 4 plugins.
 Native extension for WindowsStandalone target not found
 Native extension for WebGL target not found
 Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  1.863 seconds
-Domain Reload Profiling: 3797ms
-	BeginReloadAssembly (787ms)
+- Finished resetting the current domain, in  2.260 seconds
+Domain Reload Profiling: 4020ms
+	BeginReloadAssembly (625ms)
 		ExecutionOrderSort (0ms)
-		DisableScriptedObjects (8ms)
+		DisableScriptedObjects (7ms)
 		BackupInstance (0ms)
 		ReleaseScriptingObjects (0ms)
-		CreateAndSetChildDomain (50ms)
-	RebuildCommonClasses (92ms)
-	RebuildNativeTypeToScriptingClass (21ms)
-	initialDomainReloadingComplete (57ms)
-	LoadAllAssembliesAndSetupDomain (975ms)
-		LoadAssemblies (665ms)
+		CreateAndSetChildDomain (56ms)
+	RebuildCommonClasses (61ms)
+	RebuildNativeTypeToScriptingClass (20ms)
+	initialDomainReloadingComplete (54ms)
+	LoadAllAssembliesAndSetupDomain (998ms)
+		LoadAssemblies (618ms)
 		RebuildTransferFunctionScriptingTraits (0ms)
-		AnalyzeDomain (523ms)
-			TypeCache.Refresh (318ms)
-				TypeCache.ScanAssembly (296ms)
-			BuildScriptInfoCaches (183ms)
-			ResolveRequiredComponents (17ms)
-	FinalizeReload (1864ms)
+		AnalyzeDomain (562ms)
+			TypeCache.Refresh (359ms)
+				TypeCache.ScanAssembly (328ms)
+			BuildScriptInfoCaches (178ms)
+			ResolveRequiredComponents (20ms)
+	FinalizeReload (2261ms)
 		ReleaseScriptCaches (0ms)
 		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (1475ms)
+		SetupLoadedEditorAssemblies (1865ms)
 			LogAssemblyErrors (0ms)
-			InitializePlatformSupportModulesInManaged (4ms)
+			InitializePlatformSupportModulesInManaged (6ms)
 			SetLoadedEditorAssemblies (11ms)
-			BeforeProcessingInitializeOnLoad (306ms)
-			ProcessInitializeOnLoadAttributes (955ms)
-			ProcessInitializeOnLoadMethodAttributes (193ms)
+			BeforeProcessingInitializeOnLoad (319ms)
+			ProcessInitializeOnLoadAttributes (1313ms)
+			ProcessInitializeOnLoadMethodAttributes (208ms)
 			AfterProcessingInitializeOnLoad (7ms)
 			EditorAssembliesLoaded (0ms)
 		ExecutionOrderSort2 (0ms)
-		AwakeInstancesAfterBackupRestoration (7ms)
-Launched and connected shader compiler UnityShaderCompiler.exe after 0.02 seconds
-Refreshing native plugins compatible for Editor in 2.60 ms, found 4 plugins.
+		AwakeInstancesAfterBackupRestoration (11ms)
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.03 seconds
+Refreshing native plugins compatible for Editor in 2.88 ms, found 4 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Unloading 206 Unused Serialized files (Serialized files now loaded: 0)
-Unloading 6511 unused Assets / (3.3 MB). Loaded Objects now: 7289.
-Memory consumption went from 197.6 MB to 194.3 MB.
-Total: 27.454100 ms (FindLiveObjects: 1.918400 ms CreateObjectMapping: 8.499100 ms MarkObjects: 12.763900 ms  DeleteObjects: 4.270500 ms)
+Unloading 6511 unused Assets / (5.1 MB). Loaded Objects now: 7289.
+Memory consumption went from 197.5 MB to 192.4 MB.
+Total: 19.910300 ms (FindLiveObjects: 1.305900 ms CreateObjectMapping: 1.501100 ms MarkObjects: 12.298800 ms  DeleteObjects: 4.802400 ms)
 
 ========================================================================
 Received Import Request.
-  Time since last request: 82888.345908 seconds.
+  Time since last request: 881.246869 seconds.
+  path: Assets/InputSystem_Actions.inputactions
+  artifactKey: Guid(2bcd2660ca9b64942af0de543d8d7100) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/InputSystem_Actions.inputactions using Guid(2bcd2660ca9b64942af0de543d8d7100) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '1526cf67c1d1aaa9a72597cdbc7bb0b0') in 0.0650127 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 19
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000026 seconds.
   path: Assets/UniversalRenderPipelineGlobalSettings.asset
   artifactKey: Guid(93b439a37f63240aca3dd4e01d978a9f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/UniversalRenderPipelineGlobalSettings.asset using Guid(93b439a37f63240aca3dd4e01d978a9f) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'a2dce915d45f31430f8bdd657da3ac60') in 0.0658846 seconds
+Start importing Assets/UniversalRenderPipelineGlobalSettings.asset using Guid(93b439a37f63240aca3dd4e01d978a9f) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'a2dce915d45f31430f8bdd657da3ac60') in 0.000977 seconds
 Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 0
 
 ========================================================================
 Received Import Request.
-  Time since last request: 0.000031 seconds.
-  path: Assets/DefaultVolumeProfile.asset
-  artifactKey: Guid(3f9215ea0144899419cfbc0957140d3f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/DefaultVolumeProfile.asset using Guid(3f9215ea0144899419cfbc0957140d3f) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '1e3ee85287093c2e01e2184a29fd3edf') in 0.0019532 seconds
+  Time since last request: 25.954321 seconds.
+  path: Assets
+  artifactKey: Guid(00000000000000001000000000000000) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets using Guid(00000000000000001000000000000000) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'c391582d739b6e62a5220f35cbb167ac') in 0.000609 seconds
 Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 0
 
 ========================================================================
-Received Prepare
-Begin MonoManager ReloadAssembly
-- Loaded All Assemblies, in  1.211 seconds
-Refreshing native plugins compatible for Editor in 2.27 ms, found 4 plugins.
-Native extension for WindowsStandalone target not found
-Native extension for WebGL target not found
-Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  1.596 seconds
-Domain Reload Profiling: 2810ms
-	BeginReloadAssembly (292ms)
-		ExecutionOrderSort (0ms)
-		DisableScriptedObjects (19ms)
-		BackupInstance (0ms)
-		ReleaseScriptingObjects (0ms)
-		CreateAndSetChildDomain (69ms)
-	RebuildCommonClasses (54ms)
-	RebuildNativeTypeToScriptingClass (16ms)
-	initialDomainReloadingComplete (34ms)
-	LoadAllAssembliesAndSetupDomain (818ms)
-		LoadAssemblies (565ms)
-		RebuildTransferFunctionScriptingTraits (0ms)
-		AnalyzeDomain (407ms)
-			TypeCache.Refresh (215ms)
-				TypeCache.ScanAssembly (197ms)
-			BuildScriptInfoCaches (172ms)
-			ResolveRequiredComponents (15ms)
-	FinalizeReload (1597ms)
-		ReleaseScriptCaches (0ms)
-		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (1214ms)
-			LogAssemblyErrors (0ms)
-			InitializePlatformSupportModulesInManaged (3ms)
-			SetLoadedEditorAssemblies (8ms)
-			BeforeProcessingInitializeOnLoad (153ms)
-			ProcessInitializeOnLoadAttributes (934ms)
-			ProcessInitializeOnLoadMethodAttributes (108ms)
-			AfterProcessingInitializeOnLoad (8ms)
-			EditorAssembliesLoaded (0ms)
-		ExecutionOrderSort2 (0ms)
-		AwakeInstancesAfterBackupRestoration (22ms)
-Refreshing native plugins compatible for Editor in 2.48 ms, found 4 plugins.
-Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 13 Unused Serialized files (Serialized files now loaded: 0)
-Unloading 6509 unused Assets / (4.4 MB). Loaded Objects now: 7295.
-Memory consumption went from 167.0 MB to 162.5 MB.
-Total: 15.588100 ms (FindLiveObjects: 1.487200 ms CreateObjectMapping: 1.524400 ms MarkObjects: 8.925600 ms  DeleteObjects: 3.649500 ms)
-
-Prepare: number of updated asset objects reloaded= 0
-========================================================================
 Received Import Request.
-  Time since last request: 227.895934 seconds.
+  Time since last request: 1.652815 seconds.
   path: Assets/Scenes
   artifactKey: Guid(c608bd8aa5f078a48bed4a8a34605493) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Scenes using Guid(c608bd8aa5f078a48bed4a8a34605493) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '07955dd6b5be5083dbf496bc3f800a16') in 0.0068387 seconds
+Start importing Assets/Scenes using Guid(c608bd8aa5f078a48bed4a8a34605493) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '07955dd6b5be5083dbf496bc3f800a16') in 0.0006618 seconds
 Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 0
 
 ========================================================================
 Received Import Request.
-  Time since last request: 1.481032 seconds.
-  path: Assets/Settings
-  artifactKey: Guid(0220aab0833d04faeb927d84ca6cc40c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Settings using Guid(0220aab0833d04faeb927d84ca6cc40c) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '62508b3dd32630cf358da27d8a59d33e') in 0.0006308 seconds
+  Time since last request: 8.225675 seconds.
+  path: Assets/PNG
+  artifactKey: Guid(297b5fa8174f3c64397955e6c7d6ddc6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/PNG using Guid(297b5fa8174f3c64397955e6c7d6ddc6) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '1501211b6b95a591b28a72da31c3f351') in 0.0005323 seconds
 Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 0
 
 ========================================================================
 Received Import Request.
-  Time since last request: 0.000018 seconds.
-  path: Assets/Settings/Lit2DSceneTemplate.scenetemplate
-  artifactKey: Guid(d03ed43fc9d8a4f2e9fa70c1c7916eb9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Settings/Lit2DSceneTemplate.scenetemplate using Guid(d03ed43fc9d8a4f2e9fa70c1c7916eb9) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'a9bbb272c86577eeed89112921e40ba4') in 0.1509665 seconds
-Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 5
+  Time since last request: 19.717315 seconds.
+  path: Assets/PNG/Chess_Checkers.png
+  artifactKey: Guid(89ab9cbc2f11ce3499cce6762d487a97) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/PNG/Chess_Checkers.png using Guid(89ab9cbc2f11ce3499cce6762d487a97) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '3bbd5a8c4105961c0b4a367a3ee1f5a1') in 0.1056237 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 17
 
 ========================================================================
 Received Import Request.
-  Time since last request: 0.922561 seconds.
-  path: Assets/Settings/Scenes
-  artifactKey: Guid(d574b2fb4661c408f80aa76c0182931f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Settings/Scenes using Guid(d574b2fb4661c408f80aa76c0182931f) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '208d33276ab89d9e90bec41530e68a58') in 0.0007763 seconds
-Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 0
+  Time since last request: 58.679862 seconds.
+  path: Assets/PNG/Triangle.png
+  artifactKey: Guid(8afbbf87ee55f684989099c00e6cf820) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/PNG/Triangle.png using Guid(8afbbf87ee55f684989099c00e6cf820) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'ab32b4a1d58ef383454832fe8d492b2c') in 0.0196068 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 3
 
+========================================================================
+Received Import Request.
+  Time since last request: 23.658251 seconds.
+  path: Assets/PNG/Square.png
+  artifactKey: Guid(392fee60649fbd84089aab1010f44dcb) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/PNG/Square.png using Guid(392fee60649fbd84089aab1010f44dcb) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'e24309440bba930ecbd6d93dfe8f1ae0') in 0.0169244 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 3
+
+========================================================================
+Received Import Request.
+  Time since last request: 24.325318 seconds.
+  path: Assets/PNG/Chess_Checkers_14.prefab
+  artifactKey: Guid(daf3c0f160ff4e348b1300ed6bb56a36) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/PNG/Chess_Checkers_14.prefab using Guid(daf3c0f160ff4e348b1300ed6bb56a36) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '95c4d15d66be741a0722742723b90b81') in 0.615862 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 7
+
+========================================================================
+Received Import Request.
+  Time since last request: 150.673768 seconds.
+  path: Assets/PNG/Chess_Checkers.png
+  artifactKey: Guid(89ab9cbc2f11ce3499cce6762d487a97) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/PNG/Chess_Checkers.png using Guid(89ab9cbc2f11ce3499cce6762d487a97) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '7cc7c769640211140ada5986f5ada882') in 0.1166342 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 48
+
+========================================================================
+Received Import Request.
+  Time since last request: 8.275438 seconds.
+  path: Assets/PNG/Chess_Checkers.png
+  artifactKey: Guid(89ab9cbc2f11ce3499cce6762d487a97) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/PNG/Chess_Checkers.png using Guid(89ab9cbc2f11ce3499cce6762d487a97) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '8f4785b627512bd317b490043ece775f') in 0.0977409 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 48
+
+========================================================================
+Received Import Request.
+  Time since last request: 31.102015 seconds.
+  path: Assets/PNG/Chess_Checkers.png
+  artifactKey: Guid(89ab9cbc2f11ce3499cce6762d487a97) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/PNG/Chess_Checkers.png using Guid(89ab9cbc2f11ce3499cce6762d487a97) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'ab21761cdfb2ac8cd8f7dadeb5fa5b72') in 0.0915606 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 48
+
+========================================================================
+Received Import Request.
+  Time since last request: 106.669956 seconds.
+  path: Assets/PNG/Dame.prefab
+  artifactKey: Guid(e956b7aaa7d80e44183aa5af97b4ede2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/PNG/Dame.prefab using Guid(e956b7aaa7d80e44183aa5af97b4ede2) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '6cf4263e107b8eb7d7d2d3465b7bab4f') in 0.0172706 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 10
+
+========================================================================
+Received Import Request.
+  Time since last request: 77.134483 seconds.
+  path: Assets/PNG/Dames.prefab
+  artifactKey: Guid(b3f180c21fc1984438bebefc51b947c3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/PNG/Dames.prefab using Guid(b3f180c21fc1984438bebefc51b947c3) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'b9b8b6c0feac94257841d19484b63ec7') in 0.0154385 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 10
+
+========================================================================
+Received Import Request.
+  Time since last request: 19.608338 seconds.
+  path: Assets/PNG/Chess_Checkers_41.asset
+  artifactKey: Guid(866d0125501a53a42aa5f08afe530eeb) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/PNG/Chess_Checkers_41.asset using Guid(866d0125501a53a42aa5f08afe530eeb) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '74d0c683e859aeb8440f902f069555b4') in 0.0848966 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 3
+
+========================================================================
+Received Import Request.
+  Time since last request: 7.910971 seconds.
+  path: Assets/PNG/Chess_Checkers_42.asset
+  artifactKey: Guid(c28f2eb3e52d3414eb3b2fbd5e6bc78c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/PNG/Chess_Checkers_42.asset using Guid(c28f2eb3e52d3414eb3b2fbd5e6bc78c) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '05efd776a0eb4576cbe4daf3b7cbeaff') in 0.0150377 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 3
+
+========================================================================
+Received Import Request.
+  Time since last request: 5.840555 seconds.
+  path: Assets/PNG/Chess_Checkers_33.asset
+  artifactKey: Guid(352cb4e0dde79b04d8836095e77d611e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/PNG/Chess_Checkers_33.asset using Guid(352cb4e0dde79b04d8836095e77d611e) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '2099685a8d0100715417b4e3b2aa45d0') in 0.0130126 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 3
+
+========================================================================
+Received Import Request.
+  Time since last request: 5.300583 seconds.
+  path: Assets/PNG/Chess_Checkers_34.asset
+  artifactKey: Guid(6f1e17413c9fece45a007fda7dfd1b9a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/PNG/Chess_Checkers_34.asset using Guid(6f1e17413c9fece45a007fda7dfd1b9a) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'de95efc02173b2d276fcbabdba02a6ec') in 0.0150582 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 3
+
+========================================================================
+Received Import Request.
+  Time since last request: 5.142532 seconds.
+  path: Assets/PNG/Chess_Checkers_36.asset
+  artifactKey: Guid(a1015d6e5c1b6eb4ca35d713f4540939) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/PNG/Chess_Checkers_36.asset using Guid(a1015d6e5c1b6eb4ca35d713f4540939) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '16b64246802c0924810ee83773d02ba2') in 0.0125467 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 3
+
+========================================================================
+Received Import Request.
+  Time since last request: 4.632110 seconds.
+  path: Assets/PNG/Dames.prefab
+  artifactKey: Guid(b3f180c21fc1984438bebefc51b947c3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/PNG/Dames.prefab using Guid(b3f180c21fc1984438bebefc51b947c3) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '1aeed8daf911fb40f8802f66cfe181df') in 0.0205878 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 21
+
+========================================================================
+Received Import Request.
+  Time since last request: 430.936458 seconds.
+  path: Assets/PNG/Dames.prefab
+  artifactKey: Guid(b3f180c21fc1984438bebefc51b947c3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/PNG/Dames.prefab using Guid(b3f180c21fc1984438bebefc51b947c3) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'bb9164998a8ddcdad7f940d1ff55da24') in 0.0214341 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 21
+
+========================================================================
+Received Import Request.
+  Time since last request: 35.464007 seconds.
+  path: Assets/PNG/Chess_Checkers.png
+  artifactKey: Guid(89ab9cbc2f11ce3499cce6762d487a97) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/PNG/Chess_Checkers.png using Guid(89ab9cbc2f11ce3499cce6762d487a97) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '2d60ccb0fba63ab3f577c85302b5854f') in 0.119765 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 48
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000038 seconds.
+  path: Assets/PNG/Chess_Checkers_33.asset
+  artifactKey: Guid(352cb4e0dde79b04d8836095e77d611e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/PNG/Chess_Checkers_33.asset using Guid(352cb4e0dde79b04d8836095e77d611e) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '57532757ec1bfcf15999710ab7deda95') in 0.0140048 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 3
+
+========================================================================
+Received Import Request.
+  Time since last request: 11.622045 seconds.
+  path: Assets/PNG/Chess_Checkers_42.asset
+  artifactKey: Guid(c28f2eb3e52d3414eb3b2fbd5e6bc78c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/PNG/Chess_Checkers_42.asset using Guid(c28f2eb3e52d3414eb3b2fbd5e6bc78c) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '7e863b79463e0dd4682e35f9e445c674') in 0.0119814 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 3
+
+========================================================================
+Received Import Request.
+  Time since last request: 31.350471 seconds.
+  path: Assets/PNG/Chess_Checkers_14.prefab
+  artifactKey: Guid(daf3c0f160ff4e348b1300ed6bb56a36) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/PNG/Chess_Checkers_14.prefab using Guid(daf3c0f160ff4e348b1300ed6bb56a36) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'a9e5a7076c159dca8bfe8309b868a554') in 0.0101254 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 7
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000025 seconds.
+  path: Assets/PNG/Chess_Checkers_36.asset
+  artifactKey: Guid(a1015d6e5c1b6eb4ca35d713f4540939) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/PNG/Chess_Checkers_36.asset using Guid(a1015d6e5c1b6eb4ca35d713f4540939) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'b8489e0d61d5212c5685ac71ff02229c') in 0.0077435 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 3
+
+Editor requested this worker to shutdown with reason: Scaling down because of idle timeout
+AssetImportWorker is now disconnected from the server
+Process exiting
+Exiting without the bug reporter. Application will terminate with return code 0
