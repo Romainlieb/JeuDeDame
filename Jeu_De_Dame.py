@@ -88,7 +88,7 @@ class JeuDeDame:
         if self.mouvement_valide(x1, y1, x2, y2, joueur):
             self.plateau[x2][y2] = self.plateau[x1][y1]
             self.plateau[x1][y1] = ' '
-            if abs(x2 - x1) == 2 and abs(y2 - y1) == 2:
+            if abs(x2 - x1) >= 2 and abs(y2 - y1) >= 2:
                 self.verifier_capture(x1, y1, x2, y2)
                 self.promouvoir_dame(x2, y2, joueur)
                 while self.capture_possible_depuis(x2, y2, joueur):
@@ -138,15 +138,11 @@ class JeuDeDame:
                             enemy_piece_found = True
                         x += x_step
                         y += y_step
-                    return True
+                    return enemy_piece_found
         return False
 
     def verifier_capture(self, x1, y1, x2, y2):
-        if abs(x2 - x1) == 2 and abs(y2 - y1) == 2:
-            x_capture = (x1 + x2) // 2
-            y_capture = (y1 + y2) // 2
-            self.plateau[x_capture][y_capture] = ' '
-        elif abs(x2 - x1) > 2 and abs(y2 - y1) > 2:
+        if abs(x2 - x1) >= 2 and abs(y2 - y1) >= 2:
             x_step = 1 if x2 > x1 else -1
             y_step = 1 if y2 > y1 else -1
             x, y = x1 + x_step, y1 + y_step
@@ -196,7 +192,7 @@ class JeuDeDame:
                 while 0 <= nx < 8 and 0 <= ny < 8:
                     if self.plateau[nx][ny] != ' ':
                         if self.plateau[nx][ny] in ['B', 'D', 'N', 'd'] and \
-                           ((piece == 'D' and self.plateau[nx][ny] in ['N', 'd']) or \
+                        ((piece == 'D' and self.plateau[nx][ny] in ['N', 'd']) or \
                             (piece == 'd' and self.plateau[nx][ny] in ['B', 'D'])):
                             nx += dx
                             ny += dy
@@ -240,34 +236,7 @@ class JeuDeDame:
 
         return moves
 
-    def afficher_menu(self):
-        font = pygame.font.Font(None, 74)
-        text_blanc = font.render('Blanc', True, WHITE)
-        text_noir = font.render('Noir', True, WHITE)
-        text_aleatoire = font.render('Aleatoire', True, WHITE)
-
-        while True:
-            WIN.fill(BLACK)
-            WIN.blit(text_blanc, (WIDTH // 2 - text_blanc.get_width() // 2, HEIGHT // 4))
-            WIN.blit(text_noir, (WIDTH // 2 - text_noir.get_width() // 2, HEIGHT // 2))
-            WIN.blit(text_aleatoire, (WIDTH // 2 - text_aleatoire.get_width() // 2, 3 * HEIGHT // 4))
-            pygame.display.update()
-
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    exit()
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    pos = pygame.mouse.get_pos()
-                    if HEIGHT // 4 < pos[1] < HEIGHT // 4 + text_blanc.get_height():
-                        return 'Blanc'
-                    elif HEIGHT // 2 < pos[1] < HEIGHT // 2 + text_noir.get_height():
-                        return 'Noir'
-                    elif 3 * HEIGHT // 4 < pos[1] < 3 * HEIGHT // 4 + text_aleatoire.get_height():
-                        return random.choice(['Blanc', 'Noir'])
-
     def jouer(self):
-        self.joueur = self.afficher_menu()
         running = True
         while running:
             for event in pygame.event.get():
@@ -276,8 +245,6 @@ class JeuDeDame:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
                     row, col = pos[1] // SQUARE_SIZE, pos[0] // SQUARE_SIZE
-                    if self.joueur == 'Noir':
-                        row, col = 7 - row, 7 - col
                     if self.selected_piece:
                         x1, y1 = self.selected_piece
                         if self.deplacer_piece(x1, y1, row, col, self.joueur):
