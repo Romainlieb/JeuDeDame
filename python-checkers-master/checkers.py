@@ -37,10 +37,12 @@ def main():
                 pg.quit()
                 return
             
-            if event.type == MOUSEBUTTONDOWN:
+            #if event.type == MOUSEBUTTONDOWN:
+            if event.type == MOUSEBUTTONUP:
                 game_control.hold_piece(event.pos)
             
-            if event.type == MOUSEBUTTONUP:
+            #if event.type == MOUSEBUTTONUP:
+            if event.type == MOUSEBUTTONDOWN:
                 game_control.release_piece()
         
         pg.display.update()
