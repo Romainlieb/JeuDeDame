@@ -7,7 +7,7 @@ from game_control import GameControl
 def main():
     # Main setup
     pg.init()
-    FPS = 30
+    FPS = 165
 
     DISPLAYSURF = pg.display.set_mode((700, 500))
     pg.display.set_caption('Checkers in Python')
