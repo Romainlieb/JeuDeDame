@@ -1,267 +1,202 @@
 import pygame
 import random
+import sys
+from itertools import combinations
 
-# Constantes
-WIDTH, HEIGHT = 800, 800
-ROWS, COLS = 8, 8
-SQUARE_SIZE = WIDTH // COLS
 
-# Couleurs
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-W_POWN = (255, 255, 255)
-B_POWN = (57, 57, 56)
-GOLD = (255, 215, 0)
-HIGHLIGHT_COLOR = (0, 255, 0, 128)
+WIDTH = 800
+ROWS = 8
 
-# Initialiser Pygame
+RED = pygame.image.load('JeuDeDame/white_piece.png')
+GREEN = pygame.image.load('JeuDeDame/black_piece.png')
+
+REDKING = pygame.image.load('JeuDeDame/white_king_piece.png')
+GREENKING = pygame.image.load('JeuDeDame/black_king_piece.png')
+
+WHITE = (255,255,255)
+BLACK = (0,0,0)
+ORANGE = (235, 168, 52)
+BLUE = (76, 252, 241)
+
+
 pygame.init()
-WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption('Jeu de Dame')
+WIN = pygame.display.set_mode((WIDTH,WIDTH))
+pygame.display.set_caption('Checkers')
 
-class JeuDeDame:
-    def __init__(self):
-        self.plateau = self.initialiser_plateau()
-        self.selected_piece = None
-        self.possible_moves = []
-        self.joueur = 'Blanc'
+priorMoves=[]
+class Node:
+    def __init__(self, row, col, width):
+        self.row = row
+        self.col = col
+        self.x = int(row * width)
+        self.y = int(col * width)
+        self.colour = WHITE
+        self.piece = None
 
-    def initialiser_plateau(self):
-        plateau = [[' ' for _ in range(8)] for _ in range(8)]
-        for i in range(8):
-            for j in range(8):
-                if (i % 2 != j % 2):
-                    if i < 3:
-                        plateau[i][j] = 'B'
-                    elif i > 4:
-                        plateau[i][j] = 'N'
-        return plateau
+    def draw(self, WIN):
+        pygame.draw.rect(WIN, self.colour, (self.x, self.y, WIDTH / ROWS, WIDTH / ROWS))
+        if self.piece:
+            WIN.blit(self.piece.image, (self.x, self.y))
 
-    def draw_board(self):
-        WIN.fill(BLACK)
-        for row in range(ROWS):
-            for col in range(row % 2, COLS, 2):
-                pygame.draw.rect(WIN, WHITE, (row * SQUARE_SIZE, col * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
 
-    def draw_pieces(self):
-        for row in range(ROWS):
-            for col in range(COLS):
-                piece = self.plateau[row][col]
-                if piece != ' ':
-                    color = W_POWN if piece in ['B', 'D'] else B_POWN
-                    pygame.draw.circle(WIN, color, (col * SQUARE_SIZE + SQUARE_SIZE // 2, row * SQUARE_SIZE + SQUARE_SIZE // 2), SQUARE_SIZE // 2 - 10)
-                    if piece in ['D', 'd']:
-                        self.draw_dame_triangles(row, col, color)
+def update_display(win, grid, rows, width):
+    for row in grid:
+        for spot in row:
+            spot.draw(win)
+    draw_grid(win, rows, width)
+    pygame.display.update()
 
-    def draw_dame_triangles(self, row, col, color):
-        center_x = col * SQUARE_SIZE + SQUARE_SIZE // 2
-        center_y = row * SQUARE_SIZE + SQUARE_SIZE // 2
-        radius = SQUARE_SIZE // 2 - 10
-        triangle_side = radius // 2
 
-        def equilateral_triangle(center_x, center_y, side):
-            height = (3 ** 0.5 / 2) * side
-            return [
-                (center_x - side / 2, center_y + height / 2),
-                (center_x + side / 2, center_y + height / 2),
-                (center_x, center_y - height / 2)
-            ]
+def make_grid(rows, width):
+    grid = []
+    gap = width// rows
+    count = 0
+    for i in range(rows):
+        grid.append([])
+        for j in range(rows):
+            node = Node(j,i, gap)
+            if abs(i-j) % 2 == 0:
+                node.colour=BLACK
+            if (abs(i+j)%2==0) and (i<3):
+                node.piece = Piece('R')
+            elif(abs(i+j)%2==0) and i>4:
+                node.piece=Piece('G')
+            count+=1
+            grid[i].append(node)
+    return grid
 
-        triangle_center_y = center_y - radius // 2
-        points1 = equilateral_triangle(center_x - triangle_side * 1.25, triangle_center_y, triangle_side)
-        points2 = equilateral_triangle(center_x, triangle_center_y, triangle_side)
-        points3 = equilateral_triangle(center_x + triangle_side * 1.25, triangle_center_y, triangle_side)
 
-        pygame.draw.polygon(WIN, GOLD, points1)
-        pygame.draw.polygon(WIN, GOLD, points2)
-        pygame.draw.polygon(WIN, GOLD, points3)
+def draw_grid(win, rows, width):
+    gap = width // ROWS
+    for i in range(rows):
+        pygame.draw.line(win, BLACK, (0, i * gap), (width, i * gap))
+        for j in range(rows):
+            pygame.draw.line(win, BLACK, (j * gap, 0), (j * gap, width))
 
-    def draw_highlights(self):
-        for move in self.possible_moves:
-            row, col = move
-            pygame.draw.circle(WIN, HIGHLIGHT_COLOR, (col * SQUARE_SIZE + SQUARE_SIZE // 2, row * SQUARE_SIZE + SQUARE_SIZE // 2), SQUARE_SIZE // 2 - 10)
 
-    def deplacer_piece(self, x1, y1, x2, y2, joueur):
-        piece = self.plateau[x1][y1]
-        if (joueur == 'Blanc' and piece not in ['B', 'D']) or (joueur == 'Noir' and piece not in ['N', 'd']):
-            return False
-        if self.mouvement_valide(x1, y1, x2, y2, joueur):
-            self.plateau[x2][y2] = self.plateau[x1][y1]
-            self.plateau[x1][y1] = ' '
-            if abs(x2 - x1) >= 2 and abs(y2 - y1) >= 2:
-                self.verifier_capture(x1, y1, x2, y2)
-                self.promouvoir_dame(x2, y2, joueur)
-                while self.capture_possible_depuis(x2, y2, joueur):
-                    possible_captures = self.get_possible_captures(x2, y2)
-                    if possible_captures:
-                        nx, ny = possible_captures[0]
-                        self.plateau[nx][ny] = self.plateau[x2][y2]
-                        self.plateau[x2][y2] = ' '
-                        self.verifier_capture(x2, y2, nx, ny)
-                        x2, y2 = nx, ny
-                    else:
-                        break
-            else:
-                self.promouvoir_dame(x2, y2, joueur)
-            return True
-        return False
+class Piece:
+    def __init__(self, team):
+        self.team=team
+        self.image= RED if self.team=='R' else GREEN
+        self.type=None
 
-    def capture_possible_depuis(self, x, y, joueur):
-        piece = self.plateau[x][y]
-        if (joueur == 'Blanc' and piece in ['B', 'D']) or (joueur == 'Noir' and piece in ['N', 'd']):
-            return bool(self.get_possible_captures(x, y))
-        return False
+    def draw(self, x, y):
+        WIN.blit(self.image, (x,y))
 
-    def mouvement_valide(self, x1, y1, x2, y2, joueur):
-        if 0 <= x2 < 8 and 0 <= y2 < 8 and self.plateau[x2][y2] == ' ':
-            piece = self.plateau[x1][y1]
-            if piece in ['B', 'N']:
-                if abs(x2 - x1) == 1 and abs(y2 - y1) == 1:
-                    if (joueur == 'Blanc' and x2 > x1) or (joueur == 'Noir' and x2 < x1):
-                        return not self.capture_possible(joueur)
-                if abs(x2 - x1) == 2 and abs(y2 - y1) == 2:
-                    x_capture = (x1 + x2) // 2
-                    y_capture = (y1 + y2) // 2
-                    if (piece == 'B' and self.plateau[x_capture][y_capture] in ['N', 'd']) or \
-                    (piece == 'N' and self.plateau[x_capture][y_capture] in ['B', 'D']):
-                        return True
-            elif piece in ['D', 'd']:
-                if abs(x2 - x1) == abs(y2 - y1):
-                    x_step = 1 if x2 > x1 else -1
-                    y_step = 1 if y2 > y1 else -1
-                    x, y = x1 + x_step, y1 + y_step
-                    enemy_piece_found = False
-                    while x != x2 and y != y2:
-                        if self.plateau[x][y] != ' ':
-                            if enemy_piece_found or self.plateau[x][y] not in ['B', 'D', 'N', 'd']:
-                                return False
-                            enemy_piece_found = True
-                        x += x_step
-                        y += y_step
-                    return enemy_piece_found
-        return False
 
-    def verifier_capture(self, x1, y1, x2, y2):
-        if abs(x2 - x1) >= 2 and abs(y2 - y1) >= 2:
-            x_step = 1 if x2 > x1 else -1
-            y_step = 1 if y2 > y1 else -1
-            x, y = x1 + x_step, y1 + y_step
-            while x != x2 and y != y2:
-                if self.plateau[x][y] in ['B', 'D', 'N', 'd']:
-                    self.plateau[x][y] = ' '
-                    break
-                x += x_step
-                y += y_step
+def getNode(grid, rows, width):
+    gap = width//rows
+    RowX,RowY = pygame.mouse.get_pos()
+    Row = RowX//gap
+    Col = RowY//gap
+    return (Col,Row)
 
-    def promouvoir_dame(self, x, y, joueur):
-        if self.plateau[x][y] == 'B' and x == 7:
-            self.plateau[x][y] = 'D'
-            print(f"Le joueur {joueur} a fait apparaître une dame blanche.")
-        elif self.plateau[x][y] == 'N' and x == 0:
-            self.plateau[x][y] = 'd'
-            print(f"Le joueur {joueur} a fait apparaître une dame noire.")
 
-    def partie_terminee(self):
-        pieces_blanches = sum(ligne.count('B') + ligne.count('D') for ligne in self.plateau)
-        pieces_noires = sum(line.count('N') + line.count('d') for line in self.plateau)
-        return pieces_blanches == 0 or pieces_noires == 0
+def resetColours(grid, node):
+    positions = generatePotentialMoves(node, grid)
+    positions.append(node)
 
-    def capture_possible(self, joueur):
-        for x in range(8):
-            for y in range(8):
-                piece = self.plateau[x][y]
-                if (joueur == 'Blanc' and piece in ['B', 'D']) or (joueur == 'Noir' and piece in ['N', 'd']):
-                    if self.get_possible_captures(x, y):
-                        return True
-        return False
+    for colouredNodes in positions:
+        nodeX, nodeY = colouredNodes
+        grid[nodeX][nodeY].colour = BLACK if abs(nodeX - nodeY) % 2 == 0 else WHITE
 
-    def get_possible_captures(self, x, y):
-        piece = self.plateau[x][y]
-        captures = []
-        directions = [(-2, -2), (-2, 2), (2, -2), (2, 2)]
+def HighlightpotentialMoves(piecePosition, grid):
+    positions = generatePotentialMoves(piecePosition, grid)
+    for position in positions:
+        Column,Row = position
+        grid[Column][Row].colour=BLUE
 
-        if piece in ['B', 'N']:
-            for dx, dy in directions:
-                nx, ny = x + dx, y + dy
-                if self.mouvement_valide(x, y, nx, ny, 'Blanc' if piece in ['B', 'D'] else 'Noir'):
-                    captures.append((nx, ny))
+def opposite(team):
+    return "R" if team=="G" else "G"
 
-        elif piece in ['D', 'd']:
-            for dx, dy in directions:
-                nx, ny = x + dx, y + dy
-                while 0 <= nx < 8 and 0 <= ny < 8:
-                    if self.plateau[nx][ny] != ' ':
-                        if self.plateau[nx][ny] in ['B', 'D', 'N', 'd'] and \
-                        ((piece == 'D' and self.plateau[nx][ny] in ['N', 'd']) or \
-                            (piece == 'd' and self.plateau[nx][ny] in ['B', 'D'])):
-                            nx += dx
-                            ny += dy
-                            while 0 <= nx < 8 and 0 <= ny < 8 and self.plateau[nx][ny] == ' ':
-                                captures.append((nx, ny))
-                                nx += dx
-                                ny += dy
-                        break
-                    nx += dx
-                    ny += dy
+def generatePotentialMoves(nodePosition, grid):
+    checker = lambda x,y: x+y>=0 and x+y<8
+    positions= []
+    column, row = nodePosition
+    if grid[column][row].piece:
+        vectors = [[1, -1], [1, 1]] if grid[column][row].piece.team == "R" else [[-1, -1], [-1, 1]]
+        if grid[column][row].piece.type=='KING':
+            vectors = [[1, -1], [1, 1],[-1, -1], [-1, 1]]
+        for vector in vectors:
+            columnVector, rowVector = vector
+            if checker(columnVector,column) and checker(rowVector,row):
+                #grid[(column+columnVector)][(row+rowVector)].colour=ORANGE
+                if not grid[(column+columnVector)][(row+rowVector)].piece:
+                    positions.append((column + columnVector, row + rowVector))
+                elif grid[column+columnVector][row+rowVector].piece and\
+                        grid[column+columnVector][row+rowVector].piece.team==opposite(grid[column][row].piece.team):
 
-        return captures
+                    if checker((2* columnVector), column) and checker((2* rowVector), row) \
+                            and not grid[(2* columnVector)+ column][(2* rowVector) + row].piece:
+                        positions.append((2* columnVector+ column,2* rowVector+ row ))
 
-    def get_possible_moves(self, x, y, joueur):
-        piece = self.plateau[x][y]
-        if (joueur == 'Blanc' and piece not in ['B', 'D']) or (joueur == 'Noir' and piece not in ['N', 'd']):
-            return []
+    return positions
 
-        moves = []
-        directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
 
-        if piece in ['B', 'N']:
-            for dx, dy in directions:
-                nx, ny = x + dx, y + dy
-                if self.mouvement_valide(x, y, nx, ny, joueur):
-                    moves.append((nx, ny))
-                nx, ny = x + 2 * dx, y + 2 * dy
-                if self.mouvement_valide(x, y, nx, ny, joueur):
-                    moves.append((nx, ny))
+"""
+Error with locating opssible moves row col error
+"""
+def highlight(ClickedNode, Grid, OldHighlight):
+    Column,Row = ClickedNode
+    Grid[Column][Row].colour=ORANGE
+    if OldHighlight:
+        resetColours(Grid, OldHighlight)
+    HighlightpotentialMoves(ClickedNode, Grid)
+    return (Column,Row)
 
-        elif piece in ['D', 'd']:
-            for dx, dy in directions:
-                nx, ny = x + dx, y + dy
-                while 0 <= nx < 8 and 0 <= ny < 8 and self.plateau[nx][ny] == ' ':
-                    moves.append((nx, ny))
-                    nx += dx
-                    ny += dy
-                nx, ny = x + 2 * dx, y + 2 * dy
-                if self.mouvement_valide(x, y, nx, ny, joueur):
-                    moves.append((nx, ny))
+def move(grid, piecePosition, newPosition):
+    resetColours(grid, piecePosition)
+    newColumn, newRow = newPosition
+    oldColumn, oldRow = piecePosition
 
-        return moves
+    piece = grid[oldColumn][oldRow].piece
+    grid[newColumn][newRow].piece=piece
+    grid[oldColumn][oldRow].piece = None
 
-    def jouer(self):
-        running = True
-        while running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    pos = pygame.mouse.get_pos()
-                    row, col = pos[1] // SQUARE_SIZE, pos[0] // SQUARE_SIZE
-                    if self.selected_piece:
-                        x1, y1 = self.selected_piece
-                        if self.deplacer_piece(x1, y1, row, col, self.joueur):
-                            self.joueur = 'Noir' if self.joueur == 'Blanc' else 'Blanc'
-                        self.selected_piece = None
-                        self.possible_moves = []
-                    else:
-                        self.selected_piece = (row, col)
-                        self.possible_moves = self.get_possible_moves(row, col, self.joueur)
+    if newColumn==7 and grid[newColumn][newRow].piece.team=='R':
+        grid[newColumn][newRow].piece.type='KING'
+        grid[newColumn][newRow].piece.image=REDKING
+    if newColumn==0 and grid[newColumn][newRow].piece.team=='G':
+        grid[newColumn][newRow].piece.type='KING'
+        grid[newColumn][newRow].piece.image=GREENKING
+    if abs(newColumn-oldColumn)==2 or abs(newRow-oldRow)==2:
+        grid[int((newColumn+oldColumn)/2)][int((newRow+oldRow)/2)].piece = None
+        return grid[newColumn][newRow].piece.team
+    return opposite(grid[newColumn][newRow].piece.team)
 
-            self.draw_board()
-            self.draw_pieces()
-            self.draw_highlights()
-            pygame.display.update()
 
-        pygame.quit()
 
-if __name__ == "__main__":
-    jeu = JeuDeDame()
-    jeu.jouer()
+
+def main(WIDTH, ROWS):
+    grid = make_grid(ROWS, WIDTH)
+    highlightedPiece = None
+    currMove = 'G'
+
+    while True:
+        for event in pygame.event.get():
+            if event.type== pygame.QUIT:
+                print('EXIT SUCCESSFUL')
+                pygame.quit()
+                sys.exit()
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                clickedNode = getNode(grid, ROWS, WIDTH)
+                ClickedPositionColumn, ClickedPositionRow = clickedNode
+                if grid[ClickedPositionColumn][ClickedPositionRow].colour == BLUE:
+                    if highlightedPiece:
+                        pieceColumn, pieceRow = highlightedPiece
+                    if currMove == grid[pieceColumn][pieceRow].piece.team:
+                        resetColours(grid, highlightedPiece)
+                        currMove=move(grid, highlightedPiece, clickedNode)
+                elif highlightedPiece == clickedNode:
+                    pass
+                else:
+                    if grid[ClickedPositionColumn][ClickedPositionRow].piece:
+                        if currMove == grid[ClickedPositionColumn][ClickedPositionRow].piece.team:
+                            highlightedPiece = highlight(clickedNode, grid, highlightedPiece)
+
+
+        update_display(WIN, grid,ROWS,WIDTH)
+
+
+main(WIDTH, ROWS)
