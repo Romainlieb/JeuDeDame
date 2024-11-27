@@ -1,6 +1,35 @@
 from utils import get_position_with_row_col
 
 class Board:
+    """
+    Class representing a checkers board.
+    Attributes:
+        pieces (list): List of Piece objects on the board.
+        color_up (str): Color of the pieces that are moving up.
+    Methods:
+        __init__(pieces, color_up):
+            Initializes the board with pieces and the color moving up.
+        get_color_up():
+            Returns the color of the pieces moving up.
+        get_pieces():
+            Returns the list of pieces on the board.
+        get_piece_by_index(index):
+            Returns the piece at the specified index.
+        has_piece(position):
+            Checks if there is a piece at the given position.
+        get_row_number(position):
+            Returns the row number for the given position.
+        get_col_number(position):
+            Returns the column number for the given position.
+        get_row(row_number):
+            Returns a set of pieces in the specified row.
+        get_pieces_by_coords(*coords):
+            Returns a list of pieces at the specified (row, column) coordinates.
+        move_piece(moved_index, new_position):
+            Moves a piece to a new position and handles eating and king movements.
+        get_winner():
+            Returns the winning color or None if no player has won yet.
+    """
     def __init__(self, pieces, color_up):
         # Example: [Piece('12WND'), Piece('14BNU'), Piece('24WYD')]
         self.pieces = pieces
@@ -77,9 +106,27 @@ class Board:
         return results
     
     def move_piece(self, moved_index, new_position):
+        def is_movement_possible(current_position, new_position):
+            # Check if the new position is within the board limits
+            if new_position < 0 or new_position >= 32:
+                return False
+            
+            # Check if the new position is already occupied
+            if self.has_piece(new_position):
+                return False
+            
+            # Check if the movement is diagonal
+            current_row = self.get_row_number(current_position)
+            new_row = self.get_row_number(new_position)
+            current_col = self.get_col_number(current_position)
+            new_col = self.get_col_number(new_position)
+            
+            if abs(current_row - new_row) != abs(current_col - new_col):
+                return False
+            
+            return True
+
         def is_eat_movement(current_position):
-            # If the difference in the rows of the current and next positions isn't 1, i.e. if the piece isn't moving one square, 
-            # then the piece is eating another piece.
             return abs(self.get_row_number(current_position) - self.get_row_number(new_position)) != 1
 
         def get_eaten_index(current_position):
@@ -87,12 +134,9 @@ class Board:
             new_coords = [self.get_row_number(new_position), self.get_col_number(new_position)]
             eaten_coords = [current_coords[0], current_coords[1]]
 
-            # Dividing by 2 because neither the current position or the new one is desired, but the one in the middle.
-            # Getting the difference between the new coordinates and current coordinates helps getting the direction.
             eaten_coords[0] += (new_coords[0] - current_coords[0]) // 2
             eaten_coords[1] += (new_coords[1] - current_coords[1]) // 2
 
-            # Converting to string to compare later.
             eaten_position = str(get_position_with_row_col(eaten_coords[0], eaten_coords[1]))
 
             for index, piece in enumerate(self.pieces):
@@ -100,8 +144,7 @@ class Board:
                     return index
 
         def is_king_movement(piece):
-            # Receives the piece moving and returns True if the move turns that piece into a king.
-            if piece.is_king() == True:
+            if piece.is_king():
                 return False
             
             end_row = self.get_row_number(new_position)
@@ -112,19 +155,20 @@ class Board:
 
         piece_to_move = self.pieces[moved_index]
 
-        # Delete piece from the board if this move eats another piece
+        if not is_movement_possible(int(piece_to_move.get_position()), new_position):
+            return False
+
         if is_eat_movement(int(piece_to_move.get_position())):
             self.pieces.pop(get_eaten_index(int(piece_to_move.get_position()))) 
             piece_to_move.set_has_eaten(True)
         else:
             piece_to_move.set_has_eaten(False)
 
-        # Turn piece into a king if it reaches the other side of the board
         if is_king_movement(piece_to_move):
             piece_to_move.set_is_king(True)
 
-        # Actually move
         piece_to_move.set_position(new_position)
+        return True
     
     def get_winner(self):
         # Returns the winning color or None if no player has won yet

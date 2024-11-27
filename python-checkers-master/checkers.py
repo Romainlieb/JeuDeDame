@@ -40,6 +40,12 @@ def main():
             #if event.type == MOUSEBUTTONDOWN:
             if event.type == MOUSEBUTTONUP:
                 game_control.hold_piece(event.pos)
+
+            #Si bouton espace pressé
+            if event.type == KEYDOWN:
+                if event.key == K_SPACE:
+                    game_control.board.move_piece(8,12)
+                    
             
             #if event.type == MOUSEBUTTONUP:
             if event.type == MOUSEBUTTONDOWN:

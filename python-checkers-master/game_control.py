@@ -1,10 +1,67 @@
 from piece import Piece
+"""
+GameControl class manages the game state, player turns, and interactions with the board and pieces.
+Methods:
+    __init__():
+        Initializes the game control, setting up the initial game state.
+    get_turn():
+        Returns the current player's turn.
+    get_winner():
+        Returns the winner of the game, if any.
+    setup():
+        Sets up the initial game state with pieces and board.
+    draw_screen(display_surface):
+        Draws the game board and pieces on the given display surface.
+    hold_piece(mouse_pos):
+        Handles the logic for picking up a piece with the mouse, including determining possible moves.
+    release_piece():
+        Handles the logic for releasing a held piece, including moving the piece if the release position is valid.
+    set_held_piece(index, piece, mouse_pos):
+        Creates a HeldPiece object to follow the mouse when a piece is picked up.
+    get_all_possible_moves(color):
+        Returns a dictionary of all possible moves for all pieces of the given color.
+"""
 from board import Board
 from board_gui import BoardGUI
 from held_piece import HeldPiece
 from utils import get_surface_mouse_offset, get_piece_position
 
 class GameControl:
+    """
+    Contrôle le flux du jeu de dames, y compris les tours, les mouvements et l'affichage.
+    Attributs:
+    ----------
+    turn : str
+        Indique le tour actuel ("W" pour blanc, "B" pour noir).
+    winner : str ou None
+        Indique le gagnant du jeu, ou None si le jeu est toujours en cours.
+    board : Board
+        L'objet représentant le plateau de jeu et ses pièces.
+    board_draw : BoardGUI
+        L'objet responsable de l'affichage graphique du plateau et des pièces.
+    held_piece : HeldPiece ou None
+        La pièce actuellement tenue par le joueur, ou None si aucune pièce n'est tenue.
+    Méthodes:
+    ---------
+    __init__():
+        Initialise les attributs et configure le jeu.
+    get_turn():
+        Retourne le tour actuel.
+    get_winner():
+        Retourne le gagnant du jeu.
+    setup():
+        Configure le plateau de jeu initial avec les pièces.
+    draw_screen(display_surface):
+        Dessine le plateau et les pièces sur la surface d'affichage.
+    hold_piece(mouse_pos):
+        Sélectionne une pièce à tenir en fonction de la position de la souris.
+    release_piece():
+        Relâche la pièce tenue et effectue un mouvement si possible.
+    set_held_piece(index, piece, mouse_pos):
+        Crée un objet HeldPiece pour suivre la souris.
+    get_all_possible_moves(color):
+        Retourne tous les mouvements possibles pour une couleur donnée.
+    """
     def __init__(self):
         self.turn = "W"
         self.winner = None
@@ -108,3 +165,12 @@ class GameControl:
         surface = self.board_draw.get_surface(piece)
         offset = get_surface_mouse_offset(self.board_draw.get_piece_by_index(index)["rect"], mouse_pos)
         self.held_piece = HeldPiece(surface, offset)
+
+    def get_all_possible_moves(self, color):
+        all_moves = {}
+        for piece in self.board.get_pieces():
+            if piece.get_color() == color:
+                moves = piece.get_moves(self.board)
+                if moves:
+                    all_moves[piece] = moves
+        return all_moves
