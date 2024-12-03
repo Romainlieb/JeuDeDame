@@ -104,27 +104,44 @@ class Board:
                 results.append(None)
         
         return results
+    def get_valid_actions(self):
+        """
+        Génère une liste de toutes les actions valides dans l'état actuel du plateau.
+        Une action est définie comme une paire (source, target).
+        """
+        actions = []
+        for index, piece in enumerate(self.pieces):
+            current_position = int(piece.get_position())
+            # Vérifier les positions cibles possibles en diagonale
+            potential_moves = [current_position + offset for offset in [-4, -5, 4, 5]]
+
+            for target in potential_moves:
+                if self.is_movement_possible(index, target):  # Vérifie si le mouvement est valide
+                    actions.append((current_position, target))
+        return actions
     
+    def is_movement_possible(self,current_position, new_position):
+                # Check if the new position is within the board limits
+                if new_position < 0 or new_position >= 32:
+                    return False
+                
+                # Check if the new position is already occupied
+                if self.has_piece(new_position):
+                    return False
+                
+                # Check if the movement is diagonal
+                current_row = self.get_row_number(current_position)
+                new_row = self.get_row_number(new_position)
+                current_col = self.get_col_number(current_position)
+                new_col = self.get_col_number(new_position)
+                
+                if abs(current_row - new_row) != abs(current_col - new_col):
+                    return False
+                
+                return True
+
     def move_piece(self, moved_index, new_position):
-        def is_movement_possible(current_position, new_position):
-            # Check if the new position is within the board limits
-            if new_position < 0 or new_position >= 32:
-                return False
-            
-            # Check if the new position is already occupied
-            if self.has_piece(new_position):
-                return False
-            
-            # Check if the movement is diagonal
-            current_row = self.get_row_number(current_position)
-            new_row = self.get_row_number(new_position)
-            current_col = self.get_col_number(current_position)
-            new_col = self.get_col_number(new_position)
-            
-            if abs(current_row - new_row) != abs(current_col - new_col):
-                return False
-            
-            return True
+        
 
         def is_eat_movement(current_position):
             return abs(self.get_row_number(current_position) - self.get_row_number(new_position)) != 1
@@ -154,6 +171,26 @@ class Board:
             return end_row == king_row
 
         piece_to_move = self.pieces[moved_index]
+
+        def is_movement_possible(current_position, new_position):
+                # Check if the new position is within the board limits
+                if new_position < 0 or new_position >= 32:
+                    return False
+                
+                # Check if the new position is already occupied
+                if self.has_piece(new_position):
+                    return False
+                
+                # Check if the movement is diagonal
+                current_row = self.get_row_number(current_position)
+                new_row = self.get_row_number(new_position)
+                current_col = self.get_col_number(current_position)
+                new_col = self.get_col_number(new_position)
+                
+                if abs(current_row - new_row) != abs(current_col - new_col):
+                    return False
+                
+                return True
 
         if not is_movement_possible(int(piece_to_move.get_position()), new_position):
             return False

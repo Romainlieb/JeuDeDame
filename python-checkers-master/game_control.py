@@ -71,6 +71,24 @@ class GameControl:
 
         self.setup()
 
+    def switch_turn(self, piece_moved=None):
+        """
+        Change le tour de jeu en alternant entre les joueurs "W" (blanc) et "B" (noir).
+        Si la pièce déplacée a mangé une autre pièce, vérifie si le joueur doit continuer son tour.
+        
+        Args:
+            piece_moved (Piece): La pièce qui a été déplacée lors du dernier mouvement.
+        """
+        if piece_moved and piece_moved.get_has_eaten():
+            # Vérifie si la pièce peut encore manger
+            jump_moves = list(filter(lambda move: move["eats_piece"], piece_moved.get_moves(self.board)))
+            if jump_moves:
+                return  # Le joueur garde son tour pour continuer à jouer avec la même pièce.
+        
+        # Change de tour si aucune condition spéciale n'est remplie
+        self.turn = "B" if self.turn == "W" else "W"
+
+
     def get_turn(self):
         return self.turn
 
@@ -145,20 +163,18 @@ class GameControl:
         moved_index = self.board_draw.show_piece()
         piece_moved = self.board.get_piece_by_index(moved_index)
 
-        # Only moves the piece if dropped in a proper move mark        
+        # Effectue le mouvement si la pièce est lâchée sur une marque valide
         if position_released is not None:
             self.board.move_piece(moved_index, self.board_draw.get_position_by_rect(position_released))
             self.board_draw.set_pieces(self.board_draw.get_piece_properties(self.board))
             self.winner = self.board.get_winner()
 
-            # Check if player can eat another piece, granting an extra turn.
-            jump_moves = list(filter(lambda move: move["eats_piece"] == True, piece_moved.get_moves(self.board)))
-            
-            if len(jump_moves) == 0 or piece_moved.get_has_eaten() == False:
-                self.turn = "B" if self.turn == "W" else "W"
+            # Change de tour en passant la pièce déplacée à switch_turn
+            self.switch_turn(piece_moved)
 
         self.held_piece = None
         self.board_draw.set_move_marks([])
+
 
     def set_held_piece(self, index, piece, mouse_pos):
         # Creates a HeldPiece object to follow the mouse
