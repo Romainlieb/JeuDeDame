@@ -14,12 +14,15 @@ def display_board_console(board):
         row_display = []
         for col in range(8):
             # Calcul de la position sur un plateau de 32 cases
-            if (col//2)+(row*8) % 2 != 0:  # Case jouable (sombre)
+            if col  * 4 + (row // 2) != 0 or (col == 0 and row == 0):  # Case jouable (sombre)
                 #position = row * 4 + (col // 2)
-                piece = board.get_pieces_by_coords((col,row))
-                row_display.append(f" {piece[0]} ")
+                piece = board.get_pieces_by_coords((row,col))
+                if piece[0] != None:
+                    row_display.append(f" {piece[0].get_color()} ")
+                else:
+                    row_display.append("   ")
             else:  # Case non jouable (claire)
-                row_display.append("    ")
+                row_display.append("   ")
 
         # Afficher la ligne avec des séparateurs
         print("|" + "|".join(row_display) + "|")
@@ -38,14 +41,14 @@ def play_without_gui(game_control):
         print(f"Tour de {'Blancs' if turn == 'W' else 'Noirs'}")
 
         # Définir les actions possibles
-        valid_actions = game_control.board.get_valid_actions()
+        valid_actions = game_control.board.get_valid_actions(turn)
         if not valid_actions:
             print(f"Pas d'actions possibles pour {'Blancs' if turn == 'W' else 'Noirs'}.")
             break
 
         # Simulation pour l'IA (exemple : choix aléatoire pour l'instant)
         from random import choice
-        action = choice(valid_actions)
+        action = choice(valid_actions) # ACTION DES DEUX CAMPS DONEE PROBLEM
         print(f"Action choisie par {'IA Blancs' if turn == 'W' else 'IA Noirs'} : {action}")
 
         # Effectuer le mouvement

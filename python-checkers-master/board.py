@@ -31,9 +31,20 @@ class Board:
             Returns the winning color or None if no player has won yet.
     """
     def __init__(self, pieces, color_up):
-        # Example: [Piece('12WND'), Piece('14BNU'), Piece('24WYD')]
         self.pieces = pieces
-        self.color_up = color_up # Defines which of the colors is moving up.
+        self.color_up = color_up  # Defines which of the colors is moving up.
+        self.board = [0] * 32  # Initialize the board as empty.
+        self.update_board()
+
+    def update_board(self):
+        """
+        Updates the internal representation of the board (self.board).
+        0: empty, 1: white piece, 2: black piece.
+        """
+        self.board = [0] * 32
+        for piece in self.pieces:
+            position = int(piece.get_position())
+            self.board[position] = 1 if piece.get_color() == 'white' else 2
     
     def get_color_up(self):
         return self.color_up
@@ -104,21 +115,46 @@ class Board:
                 results.append(None)
         
         return results
-    def get_valid_actions(self):
+    def get_valid_actions(self, current_color):
         """
-        Génère une liste de toutes les actions valides dans l'état actuel du plateau.
-        Une action est définie comme une paire (source, target).
+        Génère une liste de toutes les actions valides dans l'état actuel du plateau,
+        en prenant en compte la couleur des pièces qui jouent.
+        
+        Args:
+            current_color (str): Couleur des pièces jouant actuellement ('W' pour blanc, 'B' pour noir).
+        
+        Returns:
+            list: Liste des actions valides sous forme de paires (source, target).
         """
         actions = []
         for index, piece in enumerate(self.pieces):
-            current_position = int(piece.get_position())
-            # Vérifier les positions cibles possibles en diagonale
-            potential_moves = [current_position + offset for offset in [-4, -5, 4, 5]]
+            # Vérifie si la pièce appartient au joueur actuel
+            if piece.get_color().lower() != current_color.lower():
+                continue
 
+            current_position = int(piece.get_position())
+            # Calculer les positions cibles possibles en diagonale
+            # Les mouvements dépendent de la direction selon la couleur des pièces
+            if piece.is_king():
+                # Les dames peuvent se déplacer dans toutes les directions diagonales
+                potential_moves = [
+                    current_position + offset
+                    for offset in [-4, -5, 4, 5]
+                ]
+            else:
+                # Les pions avancent selon leur couleur
+                if current_color.lower() == 'w':  # Blanc avance vers le haut
+                    potential_moves = [current_position - 4, current_position - 5]
+                elif current_color.lower() == 'b':  # Noir avance vers le bas
+                    potential_moves = [current_position + 4, current_position + 5]
+
+            # Filtrer les mouvements valides
             for target in potential_moves:
-                if self.is_movement_possible(index, target):  # Vérifie si le mouvement est valide
+                if self.is_movement_possible(current_position, target):  # Vérifie si le mouvement est valide
                     actions.append((current_position, target))
+
         return actions
+
     
     def is_movement_possible(self,current_position, new_position):
                 # Check if the new position is within the board limits
@@ -218,3 +254,37 @@ class Board:
             return current_color
         
         return None
+    
+    def get_board_state_and_count_kings(pieces):
+        """
+        Retourne l'état du plateau sous forme de liste et compte le nombre de dames.
+        
+        Args:
+            pieces (list): Liste des pièces sur le plateau.
+
+        Returns:
+            tuple:
+                - board_state (list): Liste de 32 entiers représentant l'état du plateau.
+                - white_kings (int): Nombre de dames blanches.
+                - black_kings (int): Nombre de dames noires.
+        """
+        # Initialisation de l'état du plateau et des compteurs de dames
+        board_state = [0] * 32
+        white_kings = 0
+        black_kings = 0
+
+        for piece in pieces:
+            position = int(piece.get_position())
+            is_king = piece.is_king()
+            color = piece.get_color()
+
+            if color == 'white':
+                board_state[position] = 3 if is_king else 1
+                if is_king:
+                    white_kings += 1
+            elif color == 'black':
+                board_state[position] = 4 if is_king else 2
+                if is_king:
+                    black_kings += 1
+
+        return board_state, white_kings, black_kings

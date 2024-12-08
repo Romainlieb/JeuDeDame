@@ -6,7 +6,7 @@ class Piece:
     Attributes
     ----------
     name : str
-        A string representing the piece's position, color, and king status (e.g., "16WN").
+        A string representing the piece's position, color, and king status (e.g., "16W").
     has_eaten : bool
         A boolean indicating if the piece has eaten another piece in its last move.
     Methods
