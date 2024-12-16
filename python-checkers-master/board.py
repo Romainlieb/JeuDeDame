@@ -139,14 +139,16 @@ class Board:
                 # Les dames peuvent se déplacer dans toutes les directions diagonales
                 potential_moves = [
                     current_position + offset
-                    for offset in [-4, -5, 4, 5]
+                    for offset in [-3, -4, 3, 4]
                 ]
             else:
                 # Les pions avancent selon leur couleur
                 if current_color.lower() == 'w':  # Blanc avance vers le haut
-                    potential_moves = [current_position - 4, current_position - 5]
+
+
+                    potential_moves = [current_position - 3, current_position - 4]
                 elif current_color.lower() == 'b':  # Noir avance vers le bas
-                    potential_moves = [current_position + 4, current_position + 5]
+                    potential_moves = [current_position + 3, current_position + 4]
 
             # Filtrer les mouvements valides
             for target in potential_moves:
@@ -206,7 +208,10 @@ class Board:
 
             return end_row == king_row
 
-        piece_to_move = self.pieces[moved_index]
+        for piece in self.pieces:
+            if piece.get_position() == str(moved_index):
+                piece_to_move = piece
+
 
         def is_movement_possible(current_position, new_position):
                 # Check if the new position is within the board limits
