@@ -53,6 +53,10 @@ def on_plot_button_click():
     canvas.draw()
     canvas.get_tk_widget().pack()
 
+def on_closing():
+    root.quit()
+    root.destroy()
+
 # Example usage
 Essai = [1, 2, 3, 4, 5]
 Rewards = [2.0, 5.0, 3.5, 4.0, 6.0]
@@ -60,6 +64,9 @@ Rewards = [2.0, 5.0, 3.5, 4.0, 6.0]
 # Create the main window
 root = tk.Tk()
 root.title("Choose Plot Type")
+
+# Bind the window close event to the on_closing function
+root.protocol("WM_DELETE_WINDOW", on_closing)
 
 # Create a frame for the plot
 plot_frame = tk.Frame(root)
