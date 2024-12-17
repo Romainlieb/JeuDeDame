@@ -127,6 +127,7 @@ class Board:
             list: Liste des actions valides sous forme de paires (source, target).
         """
         actions = []
+        has_jump_restraint = False
         for index, piece in enumerate(self.pieces):
             # Vérifie si la pièce appartient au joueur actuel
             if piece.get_color().lower() != current_color.lower():
@@ -154,6 +155,23 @@ class Board:
             for target in potential_moves:
                 if self.is_movement_possible(current_position, target):  # Vérifie si le mouvement est valide
                     actions.append((current_position, target))
+
+            
+        for piece in self.pieces:
+        #Verifie si une piece peut manger une autre piece
+            for move in piece.get_moves(self.board):
+                if move["eats_piece"]:
+                    if piece.get_color() == piece_clicked["piece"]["color"]:
+                        has_jump_restraint = True
+            else:
+                continue
+            break
+        
+        piece_moves = board_pieces[piece_clicked["index"]].get_moves(self.board)
+
+        if has_jump_restraint:
+            piece_moves = list(filter(lambda move: move["eats_piece"] == True, piece_moves))
+
 
         return actions
 

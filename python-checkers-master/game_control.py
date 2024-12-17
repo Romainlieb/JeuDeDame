@@ -165,7 +165,7 @@ class GameControl:
 
         # Effectue le mouvement si la pièce est lâchée sur une marque valide
         if position_released is not None:
-            self.board.move_piece(moved_index, self.board_draw.get_position_by_rect(position_released))
+            self.board.move_piece(self.board.get_piece_by_index(moved_index).get_position(), self.board_draw.get_position_by_rect(position_released))
             self.board_draw.set_pieces(self.board_draw.get_piece_properties(self.board))
             self.winner = self.board.get_winner()
 
