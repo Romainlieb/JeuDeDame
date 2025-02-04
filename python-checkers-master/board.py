@@ -45,6 +45,8 @@ class Board:
         for piece in self.pieces:
             position = int(piece.get_position())
             self.board[position] = 1 if piece.get_color() == 'white' else 2
+
+    
     
     def get_color_up(self):
         return self.color_up
@@ -127,6 +129,8 @@ class Board:
             list: Liste des actions valides sous forme de paires (source, target).
         """
         actions = []
+        eaten_actions = []
+        isEatingPiece = False
         for index, piece in enumerate(self.pieces):
             # Vérifie si la pièce appartient au joueur actuel
             if piece.get_color().lower() != current_color.lower():
@@ -139,7 +143,7 @@ class Board:
                 # Les dames peuvent se déplacer dans toutes les directions diagonales
                 potential_moves = [
                     current_position + offset
-                    for offset in [-3, -4, 3, 4]
+                    for offset in [-3- self.get_row_number(current_position)%2==0, -4- self.get_row_number(current_position)%2==0, 3 + self.get_row_number(current_position)%2==1, 4 + self.get_row_number(current_position)%2==1]
                 ]
             else:
                 # Les pions avancent selon leur couleur
@@ -152,20 +156,40 @@ class Board:
 
             # Filtrer les mouvements valides
             for target in potential_moves:
-                if self.is_movement_possible(current_position, target):  # Vérifie si le mouvement est valide
-                    actions.append((current_position, target))
-
-        return actions
+                possible,eating,positionEaten = self.is_movement_possible(current_position, target)
+                if possible:
+                    if eating:
+                        if not isEatingPiece:
+                            isEatingPiece = True
+                        eaten_actions.append((current_position, positionEaten))
+                    else:
+                        actions.append((current_position, target))
+        if isEatingPiece:
+            return eaten_actions
+        else:
+            return actions
 
     
     def is_movement_possible(self,current_position, new_position):
+                
+                addOffset = 1
+                eatingPiece = False
+                opponentColor = "W" if self.get_pieces_by_coords((self.get_row_number(current_position),self.get_col_number(current_position)))[0].get_color() == "B" else "B"
+                if self.get_row_number(current_position) % 2 == 1:
+                    addOffset = -1
+                rowParity = self.get_row_number(current_position) % 2
                 # Check if the new position is within the board limits
                 if new_position < 0 or new_position >= 32:
-                    return False
+                    return False, False, 0
+                
                 
                 # Check if the new position is already occupied
                 if self.has_piece(new_position):
-                    return False
+                    if(self.has_piece(new_position+(new_position-current_position)+addOffset)==False and  self.get_pieces_by_coords((self.get_row_number(new_position),self.get_col_number(new_position)))[0].get_color() == opponentColor):
+                        eatingPiece = True
+                    else:
+                        return False, False, 0
+                        
                 
                 # Check if the movement is diagonal
                 current_row = self.get_row_number(current_position)
@@ -174,9 +198,10 @@ class Board:
                 new_col = self.get_col_number(new_position)
                 
                 if abs(current_row - new_row) != abs(current_col - new_col):
-                    return False
-                
-                return True
+                    return False, False, 0
+                if(eatingPiece):
+                    return True,eatingPiece,new_position+(new_position-current_position)+addOffset
+                return True,False,0
 
     def move_piece(self, moved_index, new_position):
         
@@ -212,6 +237,7 @@ class Board:
             if piece.get_position() == str(moved_index):
                 piece_to_move = piece
 
+        
 
         def is_movement_possible(current_position, new_position):
                 # Check if the new position is within the board limits
@@ -293,3 +319,32 @@ class Board:
                     black_kings += 1
 
         return board_state, white_kings, black_kings
+
+    def is_piece_capturable(self, current_position, target_position, current_color):
+        """
+        Vérifie si une pièce peut être capturée en se déplaçant de current_position à target_position.
+        
+        Args:
+            current_position (int): Position actuelle de la pièce.
+            target_position (int): Position cible après la capture.
+            current_color (str): Couleur de la pièce actuelle ('W' pour blanc, 'B' pour noir).
+        
+        Returns:
+            bool: True si la capture est possible, False sinon.
+        """
+        # Calculer la position intermédiaire
+        middle_position = (current_position + target_position) // 2
+        
+        # Vérifier si la position intermédiaire contient une pièce adverse
+        if not self.has_piece(middle_position):
+            return False
+        
+        middle_piece = self.get_piece(middle_position)
+        if middle_piece.get_color().lower() == current_color.lower():
+            return False
+        
+        # Vérifier si la position cible est libre
+        if self.has_piece(target_position):
+            return False
+        
+        return True

@@ -53,7 +53,7 @@ def play_without_gui(game_control):
 
         # Effectuer le mouvement
         game_control.board.move_piece(*action)
-        game_control.switch_turn(game_control.board.get_piece_by_index(action[1]))
+        game_control.switch_turn(game_control.board.get_pieces_by_coords((game_control.board.get_row_number(action[1]),game_control.board.get_col_number(action[1])))[0])
 
     # Fin du jeu
     display_board_console(game_control.board)
