@@ -143,14 +143,14 @@ class Board:
                 # Les dames peuvent se déplacer dans toutes les directions diagonales
                 potential_moves = [
                     current_position + offset
-                    for offset in [-3- self.get_row_number(current_position)%2==0, -4- self.get_row_number(current_position)%2==0, 3 + self.get_row_number(current_position)%2==1, 4 + self.get_row_number(current_position)%2==1]
+                    for offset in [-3- int(self.get_row_number(current_position)%2==0), -4- int(self.get_row_number(current_position)%2==0), 3 + int(self.get_row_number(current_position)%2==1), 4 + int(self.get_row_number(current_position)%2==1)]
                 ]
             else:
                 # Les pions avancent selon leur couleur
                 if current_color.lower() == 'w':  # Blanc avance vers le haut
-                    potential_moves = [current_position - 3, current_position - 4]
+                    potential_moves = [current_position - 3- int(self.get_row_number(current_position)%2==0), current_position - 4 - int(self.get_row_number(current_position)%2==0)]
                 elif current_color.lower() == 'b':  # Noir avance vers le bas
-                    potential_moves = [current_position + 3, current_position + 4]
+                    potential_moves = [current_position + 3 + int(self.get_row_number(current_position)%2==1), current_position + 4 + int(self.get_row_number(current_position)%2==1)]
 
             # Filtrer les mouvements valides
             for target in potential_moves:
@@ -193,8 +193,14 @@ class Board:
                 
                 # Check if the new position is already occupied
                 if self.has_piece(new_position):
+                    isPieceAfterEat = self.has_piece(new_position+(new_position-current_position)+addOffset)==False
+                    isPieceAnOpps = self.get_pieces_by_coords((self.get_row_number(new_position),self.get_col_number(new_position)))[0].get_color() == opponentColor
+                    isNotInBorder = self.isDiagonalEatingPossible(current_position,new_position)
 
-                    if(self.has_piece(new_position+(new_position-current_position)+addOffset)==False and  self.get_pieces_by_coords((self.get_row_number(new_position),self.get_col_number(new_position)))[0].get_color() == opponentColor and self.isDiagonalEatingPossible(current_position,new_position)): #Verifie si la case d'apres est vide et si la piece est un opposant
+                    isPieceAfterEat = self.has_piece(new_position+(new_position-current_position)+addOffset)==False
+                    isPieceAnOpps = self.get_pieces_by_coords((self.get_row_number(new_position),self.get_col_number(new_position)))[0].get_color() == opponentColor
+                    isNotInBorder = self.isDiagonalEatingPossible(current_position,new_position)
+                    if(self.has_piece(isPieceAfterEat and isPieceAnOpps and isNotInBorder)): #Verifie si la case d'apres est vide et si la piece est un opposant
                         eatingPiece = True
                     else:
                         return False, False, 0

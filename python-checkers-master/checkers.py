@@ -44,6 +44,7 @@ def play_without_gui(game_control):
         valid_actions = game_control.board.get_valid_actions(turn)
         if not valid_actions:
             print(f"Pas d'actions possibles pour {'Blancs' if turn == 'W' else 'Noirs'}.")
+            game_control.board.get_valid_actions(turn)
             break
 
         # Simulation pour l'IA (exemple : choix aléatoire pour l'instant)
@@ -54,6 +55,8 @@ def play_without_gui(game_control):
         # Effectuer le mouvement
         game_control.board.move_piece(*action)
         game_control.switch_turn(game_control.board.get_pieces_by_coords((game_control.board.get_row_number(action[1]),game_control.board.get_col_number(action[1])))[0])
+        if (game_control.get_winner() != None):
+            print("galere")
 
     # Fin du jeu
     display_board_console(game_control.board)
