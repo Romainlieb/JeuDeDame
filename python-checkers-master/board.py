@@ -148,8 +148,6 @@ class Board:
             else:
                 # Les pions avancent selon leur couleur
                 if current_color.lower() == 'w':  # Blanc avance vers le haut
-
-
                     potential_moves = [current_position - 3, current_position - 4]
                 elif current_color.lower() == 'b':  # Noir avance vers le bas
                     potential_moves = [current_position + 3, current_position + 4]
@@ -169,6 +167,16 @@ class Board:
         else:
             return actions
 
+    def isDiagonalEatingPossible(self,current_position,new_position):
+        tupleLeftRight = ((0,8,16,24,7,15,23,31),(-5,3))
+        distance = new_position-current_position
+        if(current_position in tupleLeftRight[0]):
+            if(distance not in tupleLeftRight[1]):
+                return True
+            else:
+                return False
+        else:
+            return False
     
     def is_movement_possible(self,current_position, new_position):
                 
@@ -185,7 +193,8 @@ class Board:
                 
                 # Check if the new position is already occupied
                 if self.has_piece(new_position):
-                    if(self.has_piece(new_position+(new_position-current_position)+addOffset)==False and  self.get_pieces_by_coords((self.get_row_number(new_position),self.get_col_number(new_position)))[0].get_color() == opponentColor):
+
+                    if(self.has_piece(new_position+(new_position-current_position)+addOffset)==False and  self.get_pieces_by_coords((self.get_row_number(new_position),self.get_col_number(new_position)))[0].get_color() == opponentColor and self.isDiagonalEatingPossible(current_position,new_position)): #Verifie si la case d'apres est vide et si la piece est un opposant
                         eatingPiece = True
                     else:
                         return False, False, 0
@@ -320,7 +329,7 @@ class Board:
 
         return board_state, white_kings, black_kings
 
-    def is_piece_capturable(self, current_position, target_position, current_color):
+    def is_piece_capturable(self, current_position, target_position, current_color): 
         """
         Vérifie si une pièce peut être capturée en se déplaçant de current_position à target_position.
         
