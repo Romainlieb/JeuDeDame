@@ -4,6 +4,17 @@ from pygame.locals import *
 from board_gui import BoardGUI
 from game_control import GameControl
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
 def display_board_console(board):
     """
     Affiche le plateau de jeu dans la console avec toutes les cases entourées par des |.
@@ -18,7 +29,10 @@ def display_board_console(board):
                 #position = row * 4 + (col // 2)
                 piece = board.get_pieces_by_coords((row,col))
                 if piece[0] != None:
-                    row_display.append(f" {piece[0].get_color()} ")
+                    if(not piece[0].is_king()):
+                        row_display.append(f" {piece[0].get_color()} ")
+                    else:
+                        row_display.append(f"{bcolors.OKGREEN} {piece[0].get_color()} {bcolors.ENDC}")
                 else:
                     row_display.append("   ")
             else:  # Case non jouable (claire)
@@ -34,6 +48,7 @@ def play_without_gui(game_control):
     Mode de jeu sans interface graphique.
     Gère les mouvements des joueurs et de l'IA via la console.
     """
+    nbDameMove = 0
     while game_control.get_winner() is None:
         display_board_console(game_control.board)
         
@@ -42,18 +57,29 @@ def play_without_gui(game_control):
 
         # Définir les actions possibles
         valid_actions = game_control.board.get_valid_actions(turn)
+        valid_actions = game_control.board.get_valid_actions(turn)
         if not valid_actions:
             print(f"Pas d'actions possibles pour {'Blancs' if turn == 'W' else 'Noirs'}.")
+            game_control.winner = 'B' if turn == 'B' else 'W'
             game_control.board.get_valid_actions(turn)
+            print(game_control.get_winner())
             break
 
         # Simulation pour l'IA (exemple : choix aléatoire pour l'instant)
         from random import choice
-        action = choice(valid_actions) # ACTION DES DEUX CAMPS DONEE PROBLEM
+        action = choice(valid_actions) 
         print(f"Action choisie par {'IA Blancs' if turn == 'W' else 'IA Noirs'} : {action}")
 
         # Effectuer le mouvement
         game_control.board.move_piece(*action)
+        isDameMove =  game_control.board.lastMoveIsDame
+        if(isDameMove):
+            nbDameMove += 1
+        else:
+            nbDameMove = 0
+        if (nbDameMove>=25):
+            print("DAME MOVE EXCEEDED")
+            break
         game_control.switch_turn(game_control.board.get_pieces_by_coords((game_control.board.get_row_number(action[1]),game_control.board.get_col_number(action[1])))[0])
         if (game_control.get_winner() != None):
             print("galere")
@@ -61,7 +87,7 @@ def play_without_gui(game_control):
     # Fin du jeu
     display_board_console(game_control.board)
     winner = game_control.get_winner()
-    print(f"Le gagnant est : {'Blancs' if winner == 'W' else 'Noirs' if winner == 'B' else 'Aucun'}")
+    print(f"{bcolors.OKCYAN}Le gagnant est : {'Blancs' if winner == 'W' else 'Noirs' if winner == 'B' else 'Aucun'}{bcolors.ENDC}")
 
 def main():
     # Choisir le mode avec ou sans GUI

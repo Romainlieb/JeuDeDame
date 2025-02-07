@@ -1,3 +1,4 @@
+
 from utils import get_position_with_row_col
 
 class Board:
@@ -35,6 +36,7 @@ class Board:
         self.color_up = color_up  # Defines which of the colors is moving up.
         self.board = [0] * 32  # Initialize the board as empty.
         self.update_board()
+        self.lastMoveIsDame = False
 
     def update_board(self):
         """
@@ -176,7 +178,7 @@ class Board:
             else:
                 return False
         else:
-            return False
+            return True
     
     def is_movement_possible(self,current_position, new_position):
                 
@@ -193,14 +195,14 @@ class Board:
                 
                 # Check if the new position is already occupied
                 if self.has_piece(new_position):
-                    isPieceAfterEat = self.has_piece(new_position+(new_position-current_position)+addOffset)==False
+                    isNotPieceAfterEat = self.has_piece(new_position+(new_position-current_position)+addOffset)==False
                     isPieceAnOpps = self.get_pieces_by_coords((self.get_row_number(new_position),self.get_col_number(new_position)))[0].get_color() == opponentColor
                     isNotInBorder = self.isDiagonalEatingPossible(current_position,new_position)
 
-                    isPieceAfterEat = self.has_piece(new_position+(new_position-current_position)+addOffset)==False
+                    isNotPieceAfterEat = self.has_piece(new_position+(new_position-current_position)+addOffset)==False
                     isPieceAnOpps = self.get_pieces_by_coords((self.get_row_number(new_position),self.get_col_number(new_position)))[0].get_color() == opponentColor
                     isNotInBorder = self.isDiagonalEatingPossible(current_position,new_position)
-                    if(self.has_piece(isPieceAfterEat and isPieceAnOpps and isNotInBorder)): #Verifie si la case d'apres est vide et si la piece est un opposant
+                    if(isNotPieceAfterEat and isPieceAnOpps and isNotInBorder): #Verifie si la case d'apres est vide et si la piece est un opposant
                         eatingPiece = True
                     else:
                         return False, False, 0
@@ -287,6 +289,7 @@ class Board:
             piece_to_move.set_is_king(True)
 
         piece_to_move.set_position(new_position)
+        self.lastMoveIsDame = piece_to_move.is_king()
         return True
     
     def get_winner(self):
