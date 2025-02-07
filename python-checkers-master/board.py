@@ -177,6 +177,8 @@ class Board:
                 return True
             else:
                 return False
+        elif(new_position in tupleLeftRight[0]):
+            return False
         else:
             return True
     

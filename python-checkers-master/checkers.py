@@ -57,11 +57,9 @@ def play_without_gui(game_control):
 
         # Définir les actions possibles
         valid_actions = game_control.board.get_valid_actions(turn)
-        valid_actions = game_control.board.get_valid_actions(turn)
         if not valid_actions:
             print(f"Pas d'actions possibles pour {'Blancs' if turn == 'W' else 'Noirs'}.")
-            game_control.winner = 'B' if turn == 'B' else 'W'
-            game_control.board.get_valid_actions(turn)
+            game_control.winner = 'W' if turn == 'B' else 'B'
             print(game_control.get_winner())
             break
 
