@@ -41,12 +41,15 @@ class Board:
     def update_board(self):
         """
         Updates the internal representation of the board (self.board).
-        0: empty, 1: white piece, 2: black piece.
+        0: empty, 1: white piece, 2: black piece 3: white king 4: Black king.
         """
         self.board = [0] * 32
         for piece in self.pieces:
             position = int(piece.get_position())
-            self.board[position] = 1 if piece.get_color() == 'white' else 2
+            if piece.is_king():
+                self.board[position] = 3 if piece.get_color() == 'W' else 4
+            else:
+                self.board[position] = 1 if piece.get_color() == 'W' else 2
 
     
     
@@ -294,6 +297,10 @@ class Board:
         self.lastMoveIsDame = piece_to_move.is_king()
         return True
     
+    def move_pieceAgent(self, moved_index, new_position):
+        self.move_piece(moved_index, new_position)
+        return self.get_board_state_and_count_kings(self.pieces),0,0
+
     def get_winner(self):
         # Returns the winning color or None if no player has won yet
         current_color = self.pieces[0].get_color()
@@ -306,7 +313,7 @@ class Board:
         
         return None
     
-    def get_board_state_and_count_kings(pieces):
+    def get_board_state_and_count_kings(self):
         """
         Retourne l'état du plateau sous forme de liste et compte le nombre de dames.
         
@@ -324,21 +331,19 @@ class Board:
         white_kings = 0
         black_kings = 0
 
-        for piece in pieces:
+        for piece in self.pieces:
             position = int(piece.get_position())
             is_king = piece.is_king()
             color = piece.get_color()
 
             if color == 'white':
-                board_state[position] = 3 if is_king else 1
                 if is_king:
                     white_kings += 1
             elif color == 'black':
-                board_state[position] = 4 if is_king else 2
                 if is_king:
                     black_kings += 1
 
-        return board_state, white_kings, black_kings
+        return self.board, white_kings, black_kings
 
     def is_piece_capturable(self, current_position, target_position, current_color): 
         """

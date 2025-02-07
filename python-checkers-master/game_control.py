@@ -183,10 +183,9 @@ class GameControl:
         self.held_piece = HeldPiece(surface, offset)
 
     def get_all_possible_moves(self, color):
-        all_moves = {}
-        for piece in self.board.get_pieces():
-            if piece.get_color() == color:
-                moves = piece.get_moves(self.board)
-                if moves:
-                    all_moves[piece] = moves
-        return all_moves
+        return[] #Faire ceci pou n'avoir que des coup légaux
+    
+    def GetState(self):
+        state ,b,c = self.board.get_board_state_and_count_kings()
+        return state
+    

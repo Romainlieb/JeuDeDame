@@ -2,19 +2,6 @@ import pygame as pg
 from sys import exit, argv
 from pygame.locals import *
 from board_gui import BoardGUI
-from game_control import GameControl
-
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-
 def display_board_console(board):
     """
     Affiche le plateau de jeu dans la console avec toutes les cases entourées par des |.
@@ -41,7 +28,17 @@ def display_board_console(board):
         # Afficher la ligne avec des séparateurs
         print("|" + "|".join(row_display) + "|")
         print("-" * 65)  # Ligne de séparation
-
+        
+class bcolors:
+        HEADER = '\033[95m'
+        OKBLUE = '\033[94m'
+        OKCYAN = '\033[96m'
+        OKGREEN = '\033[92m'
+        WARNING = '\033[93m'
+        FAIL = '\033[91m'
+        ENDC = '\033[0m'
+        BOLD = '\033[1m'
+        UNDERLINE = '\033[4m'
 
 def play_without_gui(game_control):
     """
