@@ -2,6 +2,7 @@ import pygame as pg
 from sys import exit, argv
 from pygame.locals import *
 from board_gui import BoardGUI
+from game_control import GameControl
 def display_board_console(board):
     """
     Affiche le plateau de jeu dans la console avec toutes les cases entourées par des |.

@@ -183,9 +183,12 @@ class GameControl:
         self.held_piece = HeldPiece(surface, offset)
 
     def get_all_possible_moves(self, color):
-        return[] #Faire ceci pou n'avoir que des coup légaux
+        return self.board.get_valid_actions(color) #Faire ceci pou n'avoir que des coup légaux
     
     def GetState(self):
+        self.board.update_board()
         state ,b,c = self.board.get_board_state_and_count_kings()
         return state
-    
+    def GetIsTerminated(self):
+        
+        return True if self.get_all_possible_moves(self.turn) == [] else False

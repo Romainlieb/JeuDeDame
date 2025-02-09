@@ -43,13 +43,13 @@ class Board:
         Updates the internal representation of the board (self.board).
         0: empty, 1: white piece, 2: black piece 3: white king 4: Black king.
         """
-        self.board = [0] * 32
+        self.board = [0.0] * 32
         for piece in self.pieces:
             position = int(piece.get_position())
             if piece.is_king():
-                self.board[position] = 3 if piece.get_color() == 'W' else 4
+                self.board[position] = 3.0 if piece.get_color() == 'W' else 4.0
             else:
-                self.board[position] = 1 if piece.get_color() == 'W' else 2
+                self.board[position] = 1.0 if piece.get_color() == 'W' else 2.0
 
     
     
@@ -299,7 +299,8 @@ class Board:
     
     def move_pieceAgent(self, moved_index, new_position):
         self.move_piece(moved_index, new_position)
-        return self.get_board_state_and_count_kings(self.pieces),0,0
+        self.update_board()
+        return self.get_board_state_and_count_kings(),0,0
 
     def get_winner(self):
         # Returns the winning color or None if no player has won yet
