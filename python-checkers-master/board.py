@@ -204,9 +204,6 @@ class Board:
                     isPieceAnOpps = self.get_pieces_by_coords((self.get_row_number(new_position),self.get_col_number(new_position)))[0].get_color() == opponentColor
                     isNotInBorder = self.isDiagonalEatingPossible(current_position,new_position)
 
-                    isNotPieceAfterEat = self.has_piece(new_position+(new_position-current_position)+addOffset)==False
-                    isPieceAnOpps = self.get_pieces_by_coords((self.get_row_number(new_position),self.get_col_number(new_position)))[0].get_color() == opponentColor
-                    isNotInBorder = self.isDiagonalEatingPossible(current_position,new_position)
                     if(isNotPieceAfterEat and isPieceAnOpps and isNotInBorder): #Verifie si la case d'apres est vide et si la piece est un opposant
                         eatingPiece = True
                     else:
@@ -374,3 +371,104 @@ class Board:
             return False
         
         return True
+    
+
+def generate_moves():
+    moves = {}
+    move_id = 0
+    board_size = 8
+    playable_squares = [
+        0, 1, 2, 3,
+        4, 5, 6, 7,
+        8, 9, 10, 11,
+        12, 13, 14, 15,
+        16, 17, 18, 19,
+        20, 21, 22, 23,
+        24, 25, 26, 27,
+        28, 29, 30, 31
+    ]
+    
+    for square in playable_squares:
+        def get_col_number(position,row):
+            # There are four dark squares on each row where pieces can be placed.
+            # The remainder of (position / 4) can be used to determine which of the four squares has the position.
+            # We also take into account that odd rows on the board have a offset of 1 column.
+            remainder = position % 4
+            column_position = remainder * 2 # because the squares have a gap of one light square.
+            is_row_odd = not (row % 2 == 0)
+            return column_position + 1 if is_row_odd else column_position
+        row = square // 4
+        col = get_col_number(square,row)
+        actions = []
+        
+        # Déplacements possibles
+        possible_moves = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+        for dr, dc in possible_moves:
+            new_row, new_col = row + dr, col + dc
+            if 0 <= new_row < board_size and 0 <= new_col < board_size and (new_row * 4 + new_col // 2) in playable_squares:
+                new_square = new_row * 4 + new_col // 2
+                actions.append((square, new_square))
+            
+            # Capture (sauter par-dessus une pièce)
+            jump_row, jump_col = row + 2 * dr, col + 2 * dc
+            if 0 <= jump_row < board_size and 0 <= jump_col < board_size and (jump_row * 4 + jump_col // 2) in playable_squares:
+                jump_square = jump_row * 4 + jump_col // 2
+                actions.append((square, jump_square))
+        
+        for action in actions:
+            moves[move_id] = action
+            move_id += 1
+    
+    return moves
+# Générer le dictionnaire de mouvements possibles
+
+def TestDico(dico):
+    def get_row_number(coord):
+        return coord//4
+    def isDiagonalEatingPossible(current_position,new_position):
+        tupleLeftRight = ((0,8,16,24,7,15,23,31),(-5,3))
+        distance = new_position-current_position
+        if(current_position in tupleLeftRight[0]):
+            if(distance not in tupleLeftRight[1]):
+                return True
+            else:
+                return False
+        elif(new_position in tupleLeftRight[0]):
+            return False
+        else:
+            return True
+        
+    isCorrect = True
+    falseArray = []
+    
+    for current_position,newCoord in dico.values():
+        addOffset = 1
+        if get_row_number(current_position) % 2 == 1:
+            addOffset = -1
+        potential_moves = [
+                    current_position + offset
+                    for offset in [-3- int(get_row_number(current_position)%2==0), -4- int(get_row_number(current_position)%2==0), 3 + int(get_row_number(current_position)%2==1), 4 + int(get_row_number(current_position)%2==1)]
+                ]
+        potential_movesJump = []
+        for new_position in potential_moves:
+           potential_movesJump.append(new_position+(new_position-current_position)+addOffset)
+        if((current_position,newCoord) == (4,0)):
+            print("galere")
+        potential_moves = potential_moves+potential_movesJump
+        for jumpMove in potential_movesJump:
+            if(not isDiagonalEatingPossible(current_position,jumpMove)):
+                isCorrect = False
+                falseArray.append((current_position,newCoord))
+            
+        if not(newCoord in potential_moves):
+            isCorrect = False
+            falseArray.append((current_position,newCoord))
+    if(not isCorrect):
+        print("Dico pas bon, voila les galère : ",falseArray)
+    else:
+        print("Dico good")
+
+moves_dict = generate_moves()
+print(moves_dict)
+TestDico(moves_dict)
+
