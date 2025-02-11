@@ -4,7 +4,8 @@ from dqn import DQN
 from experience_replay import ReplayMemory
 from itertools import count
 import random
-
+import os
+os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 from game_control import GameControl
 class bcolors:
@@ -100,7 +101,7 @@ class Agent :
 
     def run(self, is_training = True, render = False):
         num_state = 32
-        num_action = 4*32
+        num_action = 170
 
         policy_net = DQN(num_state, num_action).to(device)
 
@@ -134,11 +135,22 @@ class Agent :
                     else:
                         action = (-1,-1)
                     original_action = action
+                    action = [key for key, value in gameControl.board.moves_dict.items() if value == action][0]
                     action = torch.tensor(action, dtype = torch.int64, device = device)
                 else:
                     with torch.no_grad():
-                        actionIA = policy_net(state.unsqueeze(dim=0)).squeeze().argmax()
-                        original_action = actionIA.item()
+                        actionPossibilities = gameControl.get_all_possible_moves(gameControl.get_turn())
+                        action = policy_net(state.unsqueeze(dim=0)).squeeze()
+                        actionQList = action.tolist()
+                        actionQvalueXIndex = actionQList.copy()
+                        for i in range(len(actionQList)):
+                            actionQvalueXIndex[i] = (actionQList[i],i)
+                        actionQvalueXIndex.sort()
+                        actionQvalueXIndex.reverse()
+                        for i in range(len(actionQvalueXIndex)):
+                            if actionQvalueXIndex[i][0] in actionPossibilities:
+                                action = #mettre index du tensor
+                        original_action = gameControl.board.moves_dict[actionQList.index(max(actionQList))]
                 #Processing 
                 #gameControl.board.move_pieceAgent(*original_action)
                 new_state, reward, terminated = self.step(gameControl,oGstate,original_action) #FAIRE LA REWARD ET LE TERMINATED
@@ -152,7 +164,7 @@ class Agent :
                 state = new_state
 
             reward_per_episode.append(episode_reward)
-            espilon = max(epsilon_min, epsilon *epsilon_decay)
+            epsilon = max(epsilon_min, epsilon *epsilon_decay)
             epsilonHistory.append(epsilon)
 
             if is_training and len(memory) >= 32:
@@ -196,15 +208,12 @@ class Agent :
                 '''
 
         # Calcuate Q values from current policy
-        print("policy_dqn(states) shape:", policy_dqn(states).shape)
-        print("actions shape:", actions.shape)
-        print("actions dtype:", actions.dtype)
 
-        print("Shape of policy_dqn(states):", policy_dqn(states).shape)
-        print("Shape of actions.unsqueeze(dim=1):", actions.unsqueeze(dim=1).shape)
 
-        print("policy_dqn(states).shape:", policy_dqn(states).shape)
-        print("actions.unsqueeze(1).shape:", actions.unsqueeze(1).shape)
+        print(f"actions: {actions}")
+        print(f"actions min: {actions.min()}, actions max: {actions.max()}")
+        print(f"policy_dqn(states) shape: {policy_dqn(states).shape}")
+
         current_q = policy_dqn(states).gather(1, actions.unsqueeze(1)).squeeze()
         '''
             policy_dqn(states)  ==> tensor([[1,2,3],[4,5,6]])

@@ -37,6 +37,8 @@ class Board:
         self.board = [0] * 32  # Initialize the board as empty.
         self.update_board()
         self.lastMoveIsDame = False
+        self.moves_dict = generate_moves()
+        self.moves_dict[169] = (-1,-1)
 
     def update_board(self):
         """
@@ -251,7 +253,7 @@ class Board:
             king_row = 0 if self.color_up == piece_color else 7
 
             return end_row == king_row
-
+        
         for piece in self.pieces:
             if piece.get_position() == str(moved_index):
                 piece_to_move = piece
@@ -445,6 +447,8 @@ def TestDico(dico):
         addOffset = 1
         if get_row_number(current_position) % 2 == 1:
             addOffset = -1
+        rowNb = get_row_number(current_position)
+        potential_moves = []
         potential_moves = [
                     current_position + offset
                     for offset in [-3- int(get_row_number(current_position)%2==0), -4- int(get_row_number(current_position)%2==0), 3 + int(get_row_number(current_position)%2==1), 4 + int(get_row_number(current_position)%2==1)]
@@ -454,12 +458,13 @@ def TestDico(dico):
            potential_movesJump.append(new_position+(new_position-current_position)+addOffset)
         if((current_position,newCoord) == (4,0)):
             print("galere")
-        potential_moves = potential_moves+potential_movesJump
-        for jumpMove in potential_movesJump:
-            if(not isDiagonalEatingPossible(current_position,jumpMove)):
-                isCorrect = False
-                falseArray.append((current_position,newCoord))
-            
+
+        distance = newCoord-current_position
+        if(not isDiagonalEatingPossible(current_position,newCoord) and (distance<-5 and distance>5 )):
+            isCorrect = False
+            falseArray.append((current_position,newCoord))
+
+        potential_moves = potential_moves + potential_movesJump 
         if not(newCoord in potential_moves):
             isCorrect = False
             falseArray.append((current_position,newCoord))
@@ -468,7 +473,5 @@ def TestDico(dico):
     else:
         print("Dico good")
 
-moves_dict = generate_moves()
-print(moves_dict)
-TestDico(moves_dict)
+
 
