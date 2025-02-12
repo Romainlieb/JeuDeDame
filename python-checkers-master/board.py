@@ -49,9 +49,9 @@ class Board:
         for piece in self.pieces:
             position = int(piece.get_position())
             if piece.is_king():
-                self.board[position] = 3.0 if piece.get_color() == 'W' else 4.0
+                self.board[position] = 3 if piece.get_color() == 'W' else 4
             else:
-                self.board[position] = 1.0 if piece.get_color() == 'W' else 2.0
+                self.board[position] = 1 if piece.get_color() == 'W' else 2
 
     
     

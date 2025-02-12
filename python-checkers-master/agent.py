@@ -57,10 +57,10 @@ class Agent :
         terminated = False
         
 
-        self.display_board_console(game_control.board)
+        #self.display_board_console(game_control.board)
         
         turn = game_control.get_turn()
-        print(f"Tour de {'Blancs' if turn == 'W' else 'Noirs'}")
+        #print(f"Tour de {'Blancs' if turn == 'W' else 'Noirs'}")
 
         exitList = (-1,-1)
 
@@ -73,7 +73,7 @@ class Agent :
             print(game_control.get_winner())
             terminated = True
 
-        print(f"Action choisie par {'IA Blancs' if turn == 'W' else 'IA Noirs'} : {action}")
+        #print(f"Action choisie par {'IA Blancs' if turn == 'W' else 'IA Noirs'} : {action}")
 
         # Effectuer le mouvement
         isDameMove = False
@@ -89,7 +89,6 @@ class Agent :
             print("DAME MOVE EXCEEDED")
             terminated = True
 
-        game_control.switch_turn()
         game_control.switch_turn()
         if terminated:
             # Fin du jeu
@@ -129,28 +128,39 @@ class Agent :
              
             while not terminated:
                 action = gameControl.get_all_possible_moves(gameControl.get_turn()) # action = (ancienne position , nouvelle position)
+                
                 if is_training and random.random() < epsilon:
                     if len(action) != 0:
                         action = random.choice(action)
                     else:
                         action = (-1,-1)
                     original_action = action
-                    action = [key for key, value in gameControl.board.moves_dict.items() if value == action][0]
+                    action = [key for key, value in gameControl.board.moves_dict.items() if value == action]
+                    if len(action)<=0:
+                        testAction = gameControl.get_all_possible_moves(gameControl.get_turn())
+                    action = action[0]
+                    
                     action = torch.tensor(action, dtype = torch.int64, device = device)
                 else:
                     with torch.no_grad():
-                        actionPossibilities = gameControl.get_all_possible_moves(gameControl.get_turn())
-                        action = policy_net(state.unsqueeze(dim=0)).squeeze()
-                        actionQList = action.tolist()
+                        actionPossibilities = action.copy()
+                        if len(actionPossibilities)<=0:
+                            actionPossibilities.append((-1,-1))
+                            action = (-1,-1)
+                        index = [key for move in actionPossibilities for key, value in gameControl.board.moves_dict.items() if value == move]
+                        actionChosen = policy_net(state.unsqueeze(dim=0)).squeeze()
+                        actionQList = actionChosen.tolist()
                         actionQvalueXIndex = actionQList.copy()
                         for i in range(len(actionQList)):
                             actionQvalueXIndex[i] = (actionQList[i],i)
                         actionQvalueXIndex.sort()
                         actionQvalueXIndex.reverse()
                         for i in range(len(actionQvalueXIndex)):
-                            if actionQvalueXIndex[i][0] in actionPossibilities:
-                                action = #mettre index du tensor
-                        original_action = gameControl.board.moves_dict[actionQList.index(max(actionQList))]
+                            if actionQvalueXIndex[i][1] in index:
+                                action = torch.tensor(actionQvalueXIndex[i][1], dtype = torch.int64, device = device)
+                                original_action = gameControl.board.moves_dict[actionQvalueXIndex[i][1]]
+                                break
+                        
                 #Processing 
                 #gameControl.board.move_pieceAgent(*original_action)
                 new_state, reward, terminated = self.step(gameControl,oGstate,original_action) #FAIRE LA REWARD ET LE TERMINATED
@@ -213,6 +223,8 @@ class Agent :
         print(f"actions: {actions}")
         print(f"actions min: {actions.min()}, actions max: {actions.max()}")
         print(f"policy_dqn(states) shape: {policy_dqn(states).shape}")
+        print("Actions shape before unsqueeze:", actions.shape)
+        print("Actions shape after unsqueeze:", actions.unsqueeze(1).shape)
 
         current_q = policy_dqn(states).gather(1, actions.unsqueeze(1)).squeeze()
         '''
