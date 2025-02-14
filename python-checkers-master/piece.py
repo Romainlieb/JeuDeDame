@@ -128,3 +128,5 @@ class Piece:
                 possible_moves.append({"position": str(new_position), "eats_piece": False})
         
         return possible_moves
+    
+    

@@ -7,6 +7,7 @@ import random
 import os
 os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+os.environ['TORCH_USE_CUDA_DSA'] = '1'
 from game_control import GameControl
 class bcolors:
         HEADER = '\033[95m'
@@ -58,8 +59,10 @@ class Agent :
         
 
         #self.display_board_console(game_control.board)
-        
+        reward = 0
+        game_control.board.lastReward = 0
         turn = game_control.get_turn()
+        oppositeTurn = 'W' if turn == 'B' else 'B'
         #print(f"Tour de {'Blancs' if turn == 'W' else 'Noirs'}")
 
         exitList = (-1,-1)
@@ -72,6 +75,10 @@ class Agent :
             game_control.winner = 'W' if turn == 'B' else 'B'
             print(game_control.get_winner())
             terminated = True
+            if(len(game_control.board.get_piecesByColor(turn))!=0):
+                reward = -50
+            else:
+                reward = -100
 
         #print(f"Action choisie par {'IA Blancs' if turn == 'W' else 'IA Noirs'} : {action}")
 
@@ -80,27 +87,39 @@ class Agent :
         if not terminated:
             game_control.board.move_piece(*action)
             isDameMove =  game_control.board.lastMoveIsDame
-
+            if game_control.get_all_possible_moves(oppositeTurn) == []:
+                if(len(game_control.board.get_piecesByColor(oppositeTurn))!=0):
+                    reward = 50
+                else:
+                    reward = 100
+                print("No more possible moves for the opponent")
+        
+        
         if(isDameMove):
             self.nbDameMove += 1
         else:
             self.nbDameMove = 0
         if (self.nbDameMove>=25):
             print("DAME MOVE EXCEEDED")
+            reward = -50
             terminated = True
 
-        game_control.switch_turn()
+        
+
+        
         if terminated:
-            # Fin du jeu
             self.display_board_console(game_control.board)
             winner = game_control.get_winner()
             print(f"{bcolors.OKCYAN}Le gagnant est : {'Blancs' if winner == 'W' else 'Noirs' if winner == 'B' else 'Aucun'}{bcolors.ENDC}")
-        return game_control.GetState(),0, terminated #state, reward, terminated
+
+        reward = game_control.board.lastReward + reward
+        game_control.switch_turn()
+        return game_control.GetState(),reward, terminated #state, reward, terminated
 
 
     def run(self, is_training = True, render = False):
-        num_state = 32
-        num_action = 170
+        num_state = 32+1
+        num_action = 183+1
 
         policy_net = DQN(num_state, num_action).to(device)
 
@@ -184,6 +203,9 @@ class Agent :
                 if step_count > syncRate:
                     target_net.load_state_dict(policy_net.state_dict())
                     step_count = 0
+                actionChosen = policy_net(state.unsqueeze(dim=0)).squeeze()
+                actionQList = actionChosen.tolist()
+                print(f"Episode {episode} : Reward = {episode_reward}, Epsilon = {epsilon}, Action Q-Values = {actionQList}")
             
      # Optimize policy network
     def optimize(self, policy_dqn, target_dqn, mini_batch,):
@@ -220,11 +242,11 @@ class Agent :
         # Calcuate Q values from current policy
 
 
-        print(f"actions: {actions}")
-        print(f"actions min: {actions.min()}, actions max: {actions.max()}")
-        print(f"policy_dqn(states) shape: {policy_dqn(states).shape}")
-        print("Actions shape before unsqueeze:", actions.shape)
-        print("Actions shape after unsqueeze:", actions.unsqueeze(1).shape)
+        # print(f"actions: {actions}")
+        # print(f"actions min: {actions.min()}, actions max: {actions.max()}")
+        # print(f"policy_dqn(states) shape: {policy_dqn(states).shape}")
+        # print("Actions shape before unsqueeze:", actions.shape)
+        # print("Actions shape after unsqueeze:", actions.unsqueeze(1).shape)
 
         current_q = policy_dqn(states).gather(1, actions.unsqueeze(1)).squeeze()
         '''
@@ -234,8 +256,8 @@ class Agent :
                     .squeeze()                    ==>
         '''
         # Afficher la forme de current_q et target_q
-        print("Shape of current_q:", current_q.shape)
-        print("Shape of target_q:", target_q.shape)
+        # print("Shape of current_q:", current_q.shape)
+        # print("Shape of target_q:", target_q.shape)
 
         # Compute loss
         loss = self.loss_fn(current_q, target_q)

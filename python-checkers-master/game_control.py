@@ -187,6 +187,7 @@ class GameControl:
     def GetState(self):
         self.board.update_board()
         state ,b,c = self.board.get_board_state_and_count_kings()
+        state.append(0 if self.turn == "W" else 1)
         return state
     def GetIsTerminated(self):
         

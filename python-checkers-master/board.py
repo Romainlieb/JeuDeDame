@@ -38,7 +38,9 @@ class Board:
         self.update_board()
         self.lastMoveIsDame = False
         self.moves_dict = generate_moves()
-        self.moves_dict[169] = (-1,-1)
+        self.moves_dict[183] = (-1,-1)
+        self.lastMoveIsPromote = False
+        self.lastReward = 0
 
     def update_board(self):
         """
@@ -60,6 +62,12 @@ class Board:
 
     def get_pieces(self):
         return self.pieces
+    def get_piecesByColor(self,color):
+        colorPieces = []
+        for piece in self.pieces:
+            piece.get_color() == color
+            colorPieces.append(piece)
+        return colorPieces
 
     def get_piece_by_index(self, index):
         return self.pieces[index]
@@ -188,10 +196,10 @@ class Board:
             return True
     
     def is_movement_possible(self,current_position, new_position):
-                
-                addOffset = 1
+
                 eatingPiece = False
                 opponentColor = "W" if self.get_pieces_by_coords((self.get_row_number(current_position),self.get_col_number(current_position)))[0].get_color() == "B" else "B"
+                addOffset = 1
                 if self.get_row_number(current_position) % 2 == 1:
                     addOffset = -1
                 rowParity = self.get_row_number(current_position) % 2
@@ -202,11 +210,13 @@ class Board:
                 
                 # Check if the new position is already occupied
                 if self.has_piece(new_position):
+                    posAfterEat = new_position+(new_position-current_position)+addOffset
+                    isOutsideBoard = posAfterEat < 0 or posAfterEat >= 32
                     isNotPieceAfterEat = self.has_piece(new_position+(new_position-current_position)+addOffset)==False
                     isPieceAnOpps = self.get_pieces_by_coords((self.get_row_number(new_position),self.get_col_number(new_position)))[0].get_color() == opponentColor
                     isNotInBorder = self.isDiagonalEatingPossible(current_position,new_position)
 
-                    if(isNotPieceAfterEat and isPieceAnOpps and isNotInBorder): #Verifie si la case d'apres est vide et si la piece est un opposant
+                    if(isNotPieceAfterEat and isPieceAnOpps and isNotInBorder and not isOutsideBoard): #Verifie si la case d'apres est vide et si la piece est un opposant
                         eatingPiece = True
                     else:
                         return False, False, 0
@@ -284,18 +294,86 @@ class Board:
             return False
 
         if is_eat_movement(int(piece_to_move.get_position())):
-            self.pieces.pop(get_eaten_index(int(piece_to_move.get_position()))) 
+            eatenPiece = self.get_piece_by_index(get_eaten_index(int(piece_to_move.get_position())))
+            isEatenPieceKing = eatenPiece.is_king()
+            if isEatenPieceKing:
+                self.lastReward = self.lastReward + 3 
+            else: 
+                self.lastReward = self.lastReward + 1
+            self.pieces.pop(get_eaten_index(int(piece_to_move.get_position())))
             piece_to_move.set_has_eaten(True)
         else:
             piece_to_move.set_has_eaten(False)
 
         if is_king_movement(piece_to_move):
             piece_to_move.set_is_king(True)
+            self.lastMoveIsPromote = True
+            self.lastReward = self.lastReward + 2
 
         piece_to_move.set_position(new_position)
         self.lastMoveIsDame = piece_to_move.is_king()
+        self.lastReward = self.lastReward + self.getMoveGood(new_position)
         return True
     
+    def getMoveGood(self,new_position):
+
+        def get_row_number(position):
+            return position // 4
+        def get_col_number(position,row):
+            # There are four dark squares on each row where pieces can be placed.
+            # The remainder of (position / 4) can be used to determine which of the four squares has the position.
+            # We also take into account that odd rows on the board have a offset of 1 column.
+            remainder = position % 4
+            column_position = remainder * 2 # because the squares have a gap of one light square.
+            is_row_odd = not (row % 2 == 0)
+            return column_position + 1 if is_row_odd else column_position
+        def getOpposite(index):
+            if(index == 0):
+                return 2
+            elif(index == 1):
+                return 3
+            elif(index == 2):
+                return 0
+            else:
+                return 1
+        invinciblePos = (8,16,24,7,15,23,0,31,1,2,3,28,29,30)   
+        reward = 0.5
+        if(new_position in invinciblePos):
+            return reward
+        piece = self.get_pieces_by_coords((get_row_number(new_position),get_col_number(new_position,get_row_number(new_position))))[0]
+        if piece.is_king():
+            reward = 3
+        potential_moves = [
+                    new_position + offset
+                    for offset in [-3- int(get_row_number(new_position)%2==0), -4- int(get_row_number(new_position)%2==0), 3 + int(get_row_number(new_position)%2==1), 4 + int(get_row_number(new_position)%2==1)]
+                ]
+        for i in range(len(potential_moves)):
+            if(potential_moves[i] >= 0 and potential_moves[i] < 32):
+                if(self.has_piece(potential_moves[i])):
+                    OtherPiece = self.get_pieces_by_coords((get_row_number(potential_moves[i]),get_col_number(potential_moves[i],get_row_number(potential_moves[i]))))[0]
+                    pieceColor = OtherPiece.get_color()
+                    if (pieceColor != piece.get_color()):
+                        if OtherPiece.is_king():
+                            moveOtherPiece = OtherPiece.get_adjacent_squares(self)
+                            for j in range(len(moveOtherPiece)):
+                                if (moveOtherPiece[j]==new_position and not self.has_piece(potential_moves[j])):
+                                    reward  = reward *-1
+                                    return reward
+                        else:
+                            if pieceColor == 'W':
+                                moveOtherPiece = OtherPiece.get_adjacent_squares(self)
+                                moveOtherPiece = [0,0]+moveOtherPiece
+                            else:
+                                moveOtherPiece = OtherPiece.get_adjacent_squares(self)
+                                moveOtherPiece = moveOtherPiece + [0,0]
+                            for j in range(len(moveOtherPiece)):
+                                if (moveOtherPiece[j]==new_position and not self.has_piece(potential_moves[j])):
+                                    reward  = reward *-1
+                                    return reward
+        reward = 0.5
+        return reward   
+                            
+        return True
     def move_pieceAgent(self, moved_index, new_position):
         self.move_piece(moved_index, new_position)
         self.update_board()
@@ -389,38 +467,60 @@ def generate_moves():
         24, 25, 26, 27,
         28, 29, 30, 31
     ]
-    
+    tupleLeftRight = (8,16,24,7,15,23)
+    tulpeCorner = (0,31)    
+    def get_row_number(position):
+        return position // 4
+    def get_col_number(position,row):
+        # There are four dark squares on each row where pieces can be placed.
+        # The remainder of (position / 4) can be used to determine which of the four squares has the position.
+        # We also take into account that odd rows on the board have a offset of 1 column.
+        remainder = position % 4
+        column_position = remainder * 2 # because the squares have a gap of one light square.
+        is_row_odd = not (row % 2 == 0)
+        return column_position + 1 if is_row_odd else column_position
+
     for square in playable_squares:
-        def get_col_number(position,row):
-            # There are four dark squares on each row where pieces can be placed.
-            # The remainder of (position / 4) can be used to determine which of the four squares has the position.
-            # We also take into account that odd rows on the board have a offset of 1 column.
-            remainder = position % 4
-            column_position = remainder * 2 # because the squares have a gap of one light square.
-            is_row_odd = not (row % 2 == 0)
-            return column_position + 1 if is_row_odd else column_position
-        row = square // 4
+        row = get_row_number(square)
         col = get_col_number(square,row)
-        actions = []
-        
-        # Déplacements possibles
-        possible_moves = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
-        for dr, dc in possible_moves:
-            new_row, new_col = row + dr, col + dc
-            if 0 <= new_row < board_size and 0 <= new_col < board_size and (new_row * 4 + new_col // 2) in playable_squares:
-                new_square = new_row * 4 + new_col // 2
-                actions.append((square, new_square))
-            
-            # Capture (sauter par-dessus une pièce)
-            jump_row, jump_col = row + 2 * dr, col + 2 * dc
-            if 0 <= jump_row < board_size and 0 <= jump_col < board_size and (jump_row * 4 + jump_col // 2) in playable_squares:
-                jump_square = jump_row * 4 + jump_col // 2
-                actions.append((square, jump_square))
-        
-        for action in actions:
-            moves[move_id] = action
-            move_id += 1
-    
+        addOffset = 1
+        if get_row_number(square) % 2 == 1:
+            addOffset = -1
+        if (square in tupleLeftRight):
+            bLeft = 0 if col == 0 else 1
+            bRight = 0 if col == 7 else 1
+            potential_moves = [
+                    square + offset
+                    for offset in [(-3- int(get_row_number(square)%2==0))*bRight, (-4- int(get_row_number(square)%2==0)) *bLeft , (3 + int(get_row_number(square)%2==1))*bLeft, (4 + int(get_row_number(square)%2==1))*bRight]
+            ]
+            potential_movesJump = []
+            for new_position in potential_moves:
+                if new_position != square:
+                    potential_movesJump.append(new_position+(new_position-square)+addOffset)
+            potential_moves = potential_moves + potential_movesJump
+            for action in potential_moves:
+                if(action >= 0 and action < 32 and action != square):
+                    moves[move_id] = (square,action)
+                    move_id += 1
+                    
+        elif square not in tulpeCorner:
+            potential_moves = [
+                    square + offset
+                    for offset in [-3- int(get_row_number(square)%2==0), -4- int(get_row_number(square)%2==0), 3 + int(get_row_number(square)%2==1), 4 + int(get_row_number(square)%2==1)]
+                ]
+            potential_movesJump = []
+            for new_position in potential_moves:
+                potential_movesJump.append(new_position+(new_position-square)+addOffset)
+            potential_moves = potential_moves + potential_movesJump
+            for action in potential_moves:
+                if(action >= 0 and action < 32):
+                    moves[move_id] = (square,action)
+                    move_id += 1
+    moves[move_id+1] = (0,4)
+    moves[move_id+2] = (0,9)
+    moves[move_id+3] = (31,27)
+    moves[move_id+4] = (31,22)
+
     return moves
 # Générer le dictionnaire de mouvements possibles
 
@@ -456,8 +556,7 @@ def TestDico(dico):
         potential_movesJump = []
         for new_position in potential_moves:
            potential_movesJump.append(new_position+(new_position-current_position)+addOffset)
-        if((current_position,newCoord) == (4,0)):
-            print("galere")
+        
 
         distance = newCoord-current_position
         if(not isDiagonalEatingPossible(current_position,newCoord) and (distance<-5 and distance>5 )):
@@ -474,4 +573,5 @@ def TestDico(dico):
         print("Dico good")
 
 
-
+# generate_moves()
+TestDico(generate_moves())
