@@ -33,4 +33,24 @@ class DQN(nn.Module):
         x = torchFunctionnal.relu(self.fc2(x))
         x = self.fc3(x)
         return x
-    
+
+    def save_model(self, file_path):
+        """
+        Save the model to a file.
+        
+        Parameters:
+        file_path (str): The path to the file where the model will be saved.
+        """
+        torch.save(self.state_dict(), file_path)
+
+    def load_model(self, file_path):
+        """
+        Load the model from a file.
+        
+        Parameters:
+        file_path (str): The path to the file from which the model will be loaded.
+        """
+        self.load_state_dict(torch.load(file_path))
+
+
+

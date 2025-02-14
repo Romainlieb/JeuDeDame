@@ -9,6 +9,7 @@ os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 os.environ['TORCH_USE_CUDA_DSA'] = '1'
 from game_control import GameControl
+from Graphique import Graphics
 class bcolors:
         HEADER = '\033[95m'
         OKBLUE = '\033[94m'
@@ -71,9 +72,9 @@ class Agent :
 
         # Définir les actions possibles
         if not action or noMove:
-            print(f"Pas d'actions possibles pour {'Blancs' if turn == 'W' else 'Noirs'}.")
+            #print(f"Pas d'actions possibles pour {'Blancs' if turn == 'W' else 'Noirs'}.")
             game_control.winner = 'W' if turn == 'B' else 'B'
-            print(game_control.get_winner())
+            #print(game_control.get_winner())
             terminated = True
             if(len(game_control.board.get_piecesByColor(turn))!=0):
                 reward = -50
@@ -92,7 +93,7 @@ class Agent :
                     reward = 50
                 else:
                     reward = 100
-                print("No more possible moves for the opponent")
+                #print("No more possible moves for the opponent")
         
         
         if(isDameMove):
@@ -100,17 +101,15 @@ class Agent :
         else:
             self.nbDameMove = 0
         if (self.nbDameMove>=25):
-            print("DAME MOVE EXCEEDED")
+            #print("DAME MOVE EXCEEDED")
             reward = -50
             terminated = True
 
         
-
-        
         if terminated:
-            self.display_board_console(game_control.board)
+            #self.display_board_console(game_control.board)
             winner = game_control.get_winner()
-            print(f"{bcolors.OKCYAN}Le gagnant est : {'Blancs' if winner == 'W' else 'Noirs' if winner == 'B' else 'Aucun'}{bcolors.ENDC}")
+            #print(f"{bcolors.OKCYAN}Le gagnant est : {'Blancs' if winner == 'W' else 'Noirs' if winner == 'B' else 'Aucun'}{bcolors.ENDC}")
 
         reward = game_control.board.lastReward + reward
         game_control.switch_turn()
@@ -128,26 +127,35 @@ class Agent :
         if is_training:
             memory = ReplayMemory(maxlen = 10000)
             epsilon = 1.0
-            epsilon_decay = 0.995
+            epsilon_decay = 0.999995
             epsilon_min = 0.01
             target_net = DQN(num_state, num_action).to(device)
             target_net.load_state_dict(policy_net.state_dict())
             syncRate = 10
             step_count = 0  # Compteur de pas pour la mise à jour du réseau cible
             learning_rate = 0.001
-            discount_factor = 0.99
             self.optimizer = torch.optim.Adam(policy_net.parameters(), lr = learning_rate)
        
-        for episode in count():
+        for episode in range(1000000):
             terminated = False
             episode_reward = 0.0
             gameControl = GameControl()
             oGstate = gameControl.GetState()
             state = torch.tensor(oGstate, dtype = torch.float32, device = device)
-             
+            
             while not terminated:
                 action = gameControl.get_all_possible_moves(gameControl.get_turn()) # action = (ancienne position , nouvelle position)
-                
+                if (gameControl.get_turn() == 'B'):
+                    if len(action) != 0:
+                        action = random.choice(action)
+                    else:
+                        action = (-1,-1)
+                    new_state, reward, terminated = self.step(gameControl,oGstate,action)
+                    if not terminated:
+                        continue
+                    else:
+                        break
+
                 if is_training and random.random() < epsilon:
                     if len(action) != 0:
                         action = random.choice(action)
@@ -163,17 +171,21 @@ class Agent :
                 else:
                     with torch.no_grad():
                         actionPossibilities = action.copy()
+
                         if len(actionPossibilities)<=0:
                             actionPossibilities.append((-1,-1))
                             action = (-1,-1)
+
                         index = [key for move in actionPossibilities for key, value in gameControl.board.moves_dict.items() if value == move]
                         actionChosen = policy_net(state.unsqueeze(dim=0)).squeeze()
                         actionQList = actionChosen.tolist()
                         actionQvalueXIndex = actionQList.copy()
+
                         for i in range(len(actionQList)):
                             actionQvalueXIndex[i] = (actionQList[i],i)
                         actionQvalueXIndex.sort()
                         actionQvalueXIndex.reverse()
+
                         for i in range(len(actionQvalueXIndex)):
                             if actionQvalueXIndex[i][1] in index:
                                 action = torch.tensor(actionQvalueXIndex[i][1], dtype = torch.int64, device = device)
@@ -205,8 +217,12 @@ class Agent :
                     step_count = 0
                 actionChosen = policy_net(state.unsqueeze(dim=0)).squeeze()
                 actionQList = actionChosen.tolist()
-                print(f"Episode {episode} : Reward = {episode_reward}, Epsilon = {epsilon}, Action Q-Values = {actionQList}")
-            
+                #print(f"Episode {episode} : Reward = {episode_reward}, Epsilon = {epsilon}, Action Q-Values = {actionQList}")
+            if episode % 10000 == 0:    
+                print("Iteration: "+str(episode),"Epsilon: "+str(epsilon))
+                Graphics(reward_per_episode, 'W').save_plot_as_image()
+                policy_net.save_model('dqn_model.pth')
+        return reward_per_episode 
      # Optimize policy network
     def optimize(self, policy_dqn, target_dqn, mini_batch,):
 
@@ -270,4 +286,6 @@ class Agent :
         
 if __name__ == "__main__":
     agent = Agent()
-    agent.run()
+    rewardFinal = agent.run()
+    graphics = Graphics(rewardFinal, 'W')
+    graphics.show_plot()

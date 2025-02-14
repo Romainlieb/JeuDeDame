@@ -190,5 +190,4 @@ class GameControl:
         state.append(0 if self.turn == "W" else 1)
         return state
     def GetIsTerminated(self):
-        
         return True if self.get_all_possible_moves(self.turn) == [] else False
