@@ -315,7 +315,7 @@ class Board:
         self.lastReward = self.lastReward + self.getMoveGood(new_position)
         return True
     def get_piece_by_position(self, position):
-        return  self.get_pieces_by_coords((self.get_row_number(position),self.get_col_number(position,self.get_row_number(position))))[0]
+        return  self.get_pieces_by_coords((self.get_row_number(position),self.get_col_number(position)))[0]
     def getMoveGood(self,new_position):
 
         def get_row_number(position):
