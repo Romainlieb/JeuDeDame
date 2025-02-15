@@ -29,6 +29,9 @@ class Agent :
         self.optimizer = None
         self.nbDameMove = 0
         self.discount_factor_g = 0.99
+        self.nbVictoryWhite = 0
+        self.nbVictoryBlack = 0
+        self.nbDraw = 0
     def display_board_console(self,board):
         """
         Affiche le plateau de jeu dans la console avec toutes les cases entourées par des |.
@@ -118,6 +121,12 @@ class Agent :
         if terminated:
             #self.display_board_console(game_control.board)
             winner = game_control.get_winner()
+            if winner == 'W':
+                self.nbVictoryWhite += 1
+            elif winner == 'B':
+                self.nbVictoryBlack += 1
+            else:
+                self.nbDraw += 1
             #print(f"{bcolors.OKCYAN}Le gagnant est : {'Blancs' if winner == 'W' else 'Noirs' if winner == 'B' else 'Aucun'}{bcolors.ENDC}")
 
         reward = game_control.board.lastReward + reward
@@ -145,7 +154,7 @@ class Agent :
             learning_rate = 0.001
             self.optimizer = torch.optim.Adam(policy_net.parameters(), lr = learning_rate)
        
-        for episode in range(100000):
+        for episode in range(10000):
             terminated = False
             episode_reward = 0.0
             gameControl = GameControl()
@@ -227,8 +236,8 @@ class Agent :
                 # actionChosen = policy_net(state.unsqueeze(dim=0)).squeeze()
                 # actionQList = actionChosen.tolist()
                 #print(f"Episode {episode} : Reward = {episode_reward}, Epsilon = {epsilon}, Action Q-Values = {actionQList}")
-            if episode % 5000 == 0:    
-                print("Iteration: "+str(episode),"Epsilon: "+str(epsilon))
+            if episode % 1000 == 0:    
+                print("Iteration: "+str(episode),"Epsilon: "+str(epsilon),"Victoire Blancs: "+str(self.nbVictoryWhite),"Victoire Noirs: "+str(self.nbVictoryBlack),"Matchs Nuls: "+str(self.nbDraw))
 
                 mean_reward = np.zeros(len(reward_per_episode))
                 for x in range(len(mean_reward)):

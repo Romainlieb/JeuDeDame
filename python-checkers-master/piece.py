@@ -64,7 +64,12 @@ class Piece:
 
     def set_has_eaten(self, has_eaten):
         self.has_eaten = has_eaten
-
+    def get_adjacent_squares_position(self,board):
+        adjSquares = self.get_adjacent_squares(board)
+        adjSquaresPosition = []
+        for square in adjSquares:
+            adjSquaresPosition.append(get_position_with_row_col(square[0], square[1]))
+        return adjSquaresPosition
     def get_adjacent_squares(self, board):
         # Receives a Board object, returns at max four squares, all of which are potential moves
         current_col = board.get_col_number(int(self.get_position()))
