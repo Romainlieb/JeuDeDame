@@ -314,7 +314,8 @@ class Board:
         self.lastMoveIsDame = piece_to_move.is_king()
         self.lastReward = self.lastReward + self.getMoveGood(new_position)
         return True
-    
+    def get_piece_by_position(self, position):
+        return  self.get_pieces_by_coords((self.get_row_number(position),self.get_col_number(position,self.get_row_number(position))))[0]
     def getMoveGood(self,new_position):
 
         def get_row_number(position):
@@ -329,10 +330,10 @@ class Board:
             return column_position + 1 if is_row_odd else column_position
       
         invinciblePos = (8,16,24,7,15,23,0,31,1,2,3,28,29,30)   
-        reward = 0.5
+        reward = 2
         if(new_position in invinciblePos):
             return reward
-        piece = self.get_pieces_by_coords((get_row_number(new_position),get_col_number(new_position,get_row_number(new_position))))[0]
+        piece = self.get_piece_by_position(new_position)
         if piece.is_king():
             reward = 3
         potential_moves = [
@@ -363,6 +364,10 @@ class Board:
                                     reward  = reward *-1
                                     return reward
         reward = 0.5
+        pieceAdj = piece.get_adjacent_squares(self)
+        for pos in pieceAdj:
+            if self.get_piece_by_position(pos).get_color() == piece.get_color():
+                reward += 0.7
         return reward   
                             
         return True
