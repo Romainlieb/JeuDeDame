@@ -327,15 +327,7 @@ class Board:
             column_position = remainder * 2 # because the squares have a gap of one light square.
             is_row_odd = not (row % 2 == 0)
             return column_position + 1 if is_row_odd else column_position
-        def getOpposite(index):
-            if(index == 0):
-                return 2
-            elif(index == 1):
-                return 3
-            elif(index == 2):
-                return 0
-            else:
-                return 1
+      
         invinciblePos = (8,16,24,7,15,23,0,31,1,2,3,28,29,30)   
         reward = 0.5
         if(new_position in invinciblePos):

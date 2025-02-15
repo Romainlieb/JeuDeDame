@@ -5,6 +5,7 @@ from experience_replay import ReplayMemory
 from itertools import count
 import random
 import os
+import numpy as np
 os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 os.environ['TORCH_USE_CUDA_DSA'] = '1'
@@ -76,8 +77,12 @@ class Agent :
             game_control.winner = 'W' if turn == 'B' else 'B'
             #print(game_control.get_winner())
             terminated = True
-            if(len(game_control.board.get_piecesByColor(turn))!=0):
+            enemiePieces = game_control.board.get_piecesByColor(oppositeTurn)
+            allyPieces = game_control.board.get_piecesByColor(turn)
+            if(len(allyPieces)!=0 and len(allyPieces)>len(enemiePieces)):
                 reward = -50
+            elif(len(allyPieces)!=0 and len(allyPieces)<len(enemiePieces)):
+                reward = 50
             else:
                 reward = -100
 
@@ -89,8 +94,12 @@ class Agent :
             game_control.board.move_piece(*action)
             isDameMove =  game_control.board.lastMoveIsDame
             if game_control.get_all_possible_moves(oppositeTurn) == []:
-                if(len(game_control.board.get_piecesByColor(oppositeTurn))!=0):
+                enemiePieces = game_control.board.get_piecesByColor(oppositeTurn)
+                allyPieces = game_control.board.get_piecesByColor(turn)
+                if(len(enemiePieces)!=0 and len(enemiePieces)>len(allyPieces)):
                     reward = 50
+                elif(len(enemiePieces)!=0 and len(enemiePieces)<len(allyPieces)):
+                    reward = -50
                 else:
                     reward = 100
                 #print("No more possible moves for the opponent")
@@ -136,7 +145,7 @@ class Agent :
             learning_rate = 0.001
             self.optimizer = torch.optim.Adam(policy_net.parameters(), lr = learning_rate)
        
-        for episode in range(1000000):
+        for episode in range(10000):
             terminated = False
             episode_reward = 0.0
             gameControl = GameControl()
@@ -215,13 +224,19 @@ class Agent :
                 if step_count > syncRate:
                     target_net.load_state_dict(policy_net.state_dict())
                     step_count = 0
-                actionChosen = policy_net(state.unsqueeze(dim=0)).squeeze()
-                actionQList = actionChosen.tolist()
+                # actionChosen = policy_net(state.unsqueeze(dim=0)).squeeze()
+                # actionQList = actionChosen.tolist()
                 #print(f"Episode {episode} : Reward = {episode_reward}, Epsilon = {epsilon}, Action Q-Values = {actionQList}")
-            if episode % 10000 == 0:    
+            if episode % 500 == 0:    
                 print("Iteration: "+str(episode),"Epsilon: "+str(epsilon))
-                Graphics(reward_per_episode, 'W').save_plot_as_image()
+
+                mean_reward = np.zeros(len(reward_per_episode))
+                for x in range(len(mean_reward)):
+                    mean_reward[x] = np.mean(reward_per_episode[max(0,x-99):x+1])
+                mean_reward = mean_reward.tolist()
+                Graphics(mean_reward, 'W',epsilonHistory).save_plot_as_image("Epsilon","Reward")
                 policy_net.save_model('dqn_model.pth')
+
         return reward_per_episode 
      # Optimize policy network
     def optimize(self, policy_dqn, target_dqn, mini_batch,):

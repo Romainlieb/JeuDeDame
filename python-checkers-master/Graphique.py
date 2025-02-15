@@ -3,11 +3,14 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
 from tkinter import ttk
 class Graphics:
-    def __init__(self, rewards, color_up):
+    def __init__(self, rewards, color_up,xData=None):
         self.Rewards = rewards
-        self.Essai = []
-        for i in range(len(self.Rewards)):
-            self.Essai.append(i)
+        if xData is None:
+            self.Essai = []
+            for i in range(len(self.Rewards)):
+                self.Essai.append(i)
+        else:
+            self.Essai = xData
         self.color_up = color_up
         self.plot_type_var = None
         self.plot_frame = None
@@ -54,7 +57,7 @@ class Graphics:
         
         return fig
 
-    def save_plot_as_image(self,plot_type='line', filename='plot.png'):
+    def save_plot_as_image(self,xLabel,yLabel,plot_type='line', filename='plot.png'):
         """
         Function to plot the number of trials (Essai) on the x-axis and the rewards (Rewards) on the y-axis,
         and save the plot as an image file.
@@ -87,9 +90,9 @@ class Graphics:
             raise ValueError("Invalid plot_type. Choose from 'line', 'bar', or 'scatter'.")
         
         color = "Blanc" if self.color_up == 'W' else "Noir"
-        ax.set_xlabel('Nombre d\'essai')
-        ax.set_ylabel('Reward (R)')
-        ax.set_title('Essai vs Reward pour ' + color)
+        ax.set_xlabel(xLabel)
+        ax.set_ylabel(yLabel)
+        ax.set_title('{xLabel} vs {yLabel} pour ' + color)
         ax.grid(True)
         
         # Save the plot as an image file
