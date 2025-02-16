@@ -154,7 +154,7 @@ class Agent :
             learning_rate = 0.001
             self.optimizer = torch.optim.Adam(policy_net.parameters(), lr = learning_rate)
        
-        for episode in range(10000):
+        for episode in range(1500000):
             terminated = False
             episode_reward = 0.0
             gameControl = GameControl()
@@ -236,7 +236,7 @@ class Agent :
                 # actionChosen = policy_net(state.unsqueeze(dim=0)).squeeze()
                 # actionQList = actionChosen.tolist()
                 #print(f"Episode {episode} : Reward = {episode_reward}, Epsilon = {epsilon}, Action Q-Values = {actionQList}")
-            if episode % 1000 == 0:    
+            if episode % 5000 == 0:    
                 print("Iteration: "+str(episode),"Epsilon: "+str(epsilon),"Victoire Blancs: "+str(self.nbVictoryWhite),"Victoire Noirs: "+str(self.nbVictoryBlack),"Matchs Nuls: "+str(self.nbDraw))
 
                 mean_reward = np.zeros(len(reward_per_episode))
