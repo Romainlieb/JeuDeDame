@@ -62,14 +62,15 @@ class Agent :
     def step(self, game_control,state, action):
         terminated = False
         
-
+        
         #self.display_board_console(game_control.board)
         reward = 0
         game_control.board.lastReward = 0
         turn = game_control.get_turn()
         oppositeTurn = 'W' if turn == 'B' else 'B'
         #print(f"Tour de {'Blancs' if turn == 'W' else 'Noirs'}")
-
+        enemiePieces = game_control.board.get_piecesByColor(oppositeTurn)
+        allyPieces = game_control.board.get_piecesByColor(turn)
         exitList = (-1,-1)
 
         noMove = all(x == y for x, y in zip(action, exitList))
@@ -80,8 +81,7 @@ class Agent :
             game_control.winner = 'W' if turn == 'B' else 'B'
             #print(game_control.get_winner())
             terminated = True
-            enemiePieces = game_control.board.get_piecesByColor(oppositeTurn).copy()
-            allyPieces = game_control.board.get_piecesByColor(turn).copy()
+            
             if(len(allyPieces)!=0 and len(allyPieces)>len(enemiePieces)):
                 reward = -50
             elif(len(allyPieces)!=0 and len(allyPieces)<len(enemiePieces)):
@@ -103,8 +103,6 @@ class Agent :
             game_control.board.move_piece(*action)
             isDameMove =  game_control.board.lastMoveIsDame
             if game_control.get_all_possible_moves(oppositeTurn) == []:
-                enemiePieces = game_control.board.get_piecesByColor(oppositeTurn).copy()
-                allyPieces = game_control.board.get_piecesByColor(turn).copy()
                 if(len(enemiePieces)!=0 and len(enemiePieces)>len(allyPieces)):
                     reward = 50
                 elif(len(enemiePieces)!=0 and len(enemiePieces)<len(allyPieces)):

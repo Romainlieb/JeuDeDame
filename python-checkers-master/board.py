@@ -65,8 +65,8 @@ class Board:
     def get_piecesByColor(self,color):
         colorPieces = []
         for piece in self.pieces:
-            piece.get_color() == color
-            colorPieces.append(piece)
+            if piece.get_color() == color:
+                colorPieces.append(piece)
         return colorPieces
 
     def get_piece_by_index(self, index):
@@ -314,8 +314,6 @@ class Board:
         self.lastMoveIsDame = piece_to_move.is_king()
         self.lastReward = self.lastReward + self.getMoveGood(new_position)
         return True
-    def get_piece_by_position(self, position):
-        return  self.get_pieces_by_coords((self.get_row_number(position),self.get_col_number(position)))[0]
     
     def getMoveGood(self,new_position):
 
@@ -331,23 +329,23 @@ class Board:
             return column_position + 1 if is_row_odd else column_position
         def getOpposite(index):
             if(index == 0):
-                return 3
-            elif(index == 1):
                 return 2
-            elif(index == 2):
-                return 1
-            else:
+            elif(index == 1):
                 return 3
+            elif(index == 2):
+                return 0
+            else:
+                return 1
         invinciblePos = (8,16,24,7,15,23,0,31,1,2,3,28,29,30)   
-        reward = 2
+        reward = 0.5
         if(new_position in invinciblePos):
             return reward
-        piece = self.get_piece_by_position(new_position)
+        piece = self.get_pieces_by_coords((get_row_number(new_position),get_col_number(new_position,get_row_number(new_position))))[0]
         if piece.is_king():
             reward = 3
         potential_moves = [
                     new_position + offset
-                    for offset in [-4- int(get_row_number(new_position)%2==0), -3 -int(get_row_number(new_position)%2==0), 3 + int(get_row_number(new_position)%2==1), 4 + int(get_row_number(new_position)%2==1)]
+                    for offset in [-3- int(get_row_number(new_position)%2==0), -4- int(get_row_number(new_position)%2==0), 3 + int(get_row_number(new_position)%2==1), 4 + int(get_row_number(new_position)%2==1)]
                 ]
         for i in range(len(potential_moves)):
             if(potential_moves[i] >= 0 and potential_moves[i] < 32):
@@ -356,43 +354,23 @@ class Board:
                     pieceColor = OtherPiece.get_color()
                     if (pieceColor != piece.get_color()):
                         if OtherPiece.is_king():
-                            moveOtherPiece = OtherPiece.get_adjacent_squares_position(self)
+                            moveOtherPiece = OtherPiece.get_adjacent_squares(self)
                             for j in range(len(moveOtherPiece)):
-
                                 if (moveOtherPiece[j]==new_position and not self.has_piece(potential_moves[j])):
                                     reward  = reward *-1
                                     return reward
                         else:
                             if pieceColor == 'W':
-                                moveOtherPiece = OtherPiece.get_adjacent_squares_position(self)
-                                moveOtherPiece = moveOtherPiece+[0,0]
+                                moveOtherPiece = OtherPiece.get_adjacent_squares(self)
+                                moveOtherPiece = [0,0]+moveOtherPiece
                             else:
-                                moveOtherPiece = OtherPiece.get_adjacent_squares_position(self)
-                                moveOtherPiece = [0,0] + moveOtherPiece 
+                                moveOtherPiece = OtherPiece.get_adjacent_squares(self)
+                                moveOtherPiece = moveOtherPiece + [0,0]
                             for j in range(len(moveOtherPiece)):
                                 if (moveOtherPiece[j]==new_position and not self.has_piece(potential_moves[j])):
                                     reward  = reward *-1
                                     return reward
         reward = 0.5
-        pieceAdj = piece.get_adjacent_squares_position(self)
-
-        for pos in pieceAdj:
-            OtherPiece = self.get_piece_by_position(pos)
-            if OtherPiece:
-                if OtherPiece.get_color() == piece.get_color():
-                    reward += 0.7 #si piece devant est bonne
-
-        if piece.get_color() == 'W' and not piece.is_king():
-            pieceAdj = pieceAdj+[-1,-1]
-        elif not piece.is_king():
-            pieceAdj = [-1,-1]+pieceAdj 
-
-        for i in range(len(pieceAdj)):
-            if (pieceAdj[i] >= 0 and pieceAdj[i] < 32):
-                OtherPiece = self.get_piece_by_position(potential_moves[getOpposite(i)])
-                if OtherPiece:
-                    if OtherPiece.get_color() == piece.get_color():
-                        reward += 1 #si piece est derriere
         return reward   
                             
         return True
