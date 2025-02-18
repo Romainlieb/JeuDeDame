@@ -6,6 +6,7 @@ from itertools import count
 import random
 import os
 import numpy as np
+import time
 os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 os.environ['TORCH_USE_CUDA_DSA'] = '1'
@@ -165,8 +166,9 @@ class Agent :
             step_count = 0  # Compteur de pas pour la mise à jour du réseau cible
             learning_rate = 0.001
             self.optimizer = torch.optim.Adam(policy_net.parameters(), lr = learning_rate)
-       
-        for episode in count():
+
+        start = time.perf_counter()
+        for episode in count():         
             terminated = False
             episode_reward = 0.0
             gameControl = GameControl()
@@ -248,18 +250,22 @@ class Agent :
                 # actionChosen = policy_net(state.unsqueeze(dim=0)).squeeze()
                 # actionQList = actionChosen.tolist()
                 #print(f"Episode {episode} : Reward = {episode_reward}, Epsilon = {epsilon}, Action Q-Values = {actionQList}")
-            if episode % 5000 == 0:    
+                
+            if episode % 5000 == 0 and episode != 0:    
                 print("Iteration: "+str(episode),"Epsilon: "+str(epsilon),"Victoire Blancs depuis le dernier episode: "+str(self.nbVictoryWhite),"Victoire Noirs: "+str(self.nbVictoryBlack),"Matchs Nuls: "+str(self.nbDraw))
                 self.nbVictoryWhite = 0
                 self.nbVictoryBlack = 0
                 self.nbDraw = 0
-
+                end = time.perf_counter()
+                print(f"Temps d'exécution: {end - start} secondes")
                 mean_reward = np.zeros(len(reward_per_episode))
                 for x in range(len(mean_reward)):
                     mean_reward[x] = np.mean(reward_per_episode[max(0,x-99):x+1])
                 mean_reward = mean_reward.tolist()
                 Graphics(mean_reward, 'W',epsilonHistory).save_plot_as_image("Epsilon","Reward")
                 policy_net.save_model('dqn_model.pth')
+                start = time.perf_counter()
+
 
         return reward_per_episode 
      # Optimize policy network

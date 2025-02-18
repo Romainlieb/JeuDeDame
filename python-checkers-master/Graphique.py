@@ -55,6 +55,9 @@ class Graphics:
         ax.set_title('Essai vs Reward pour '+color)
         ax.grid(True)
         
+        # Inverser l'axe des x
+        ax.invert_xaxis()
+        
         return fig
 
     def save_plot_as_image(self,xLabel,yLabel,plot_type='line', filename='plot.png'):
@@ -68,7 +71,6 @@ class Graphics:
         plot_type (str): Type of plot ('line', 'bar', 'scatter').
         filename (str): The name of the file to save the plot image.
         """
-        # Check if Essai and Rewards are lists and have the same length
         if not isinstance(self.Essai, list):
             raise ValueError("self.Essai must be a list.")
         if not isinstance(self.Rewards, list):
@@ -76,10 +78,8 @@ class Graphics:
         if len(self.Essai) != len(self.Rewards):
             raise ValueError("self.Essai and self.Rewards must have the same length.")
         
-        # Create the figure and axis
         fig, ax = plt.subplots()
         
-        # Plot the data based on the plot_type
         if plot_type == 'line':
             ax.plot(self.Essai, self.Rewards, marker='o', linestyle='-')
         elif plot_type == 'bar':
@@ -92,10 +92,12 @@ class Graphics:
         color = "Blanc" if self.color_up == 'W' else "Noir"
         ax.set_xlabel(xLabel)
         ax.set_ylabel(yLabel)
-        ax.set_title('{xLabel} vs {yLabel} pour ' + color)
+        ax.set_title(f'{xLabel} vs {yLabel} pour {color}')
         ax.grid(True)
         
-        # Save the plot as an image file
+        # Inverser l'axe des x
+        ax.invert_xaxis()
+        
         fig.savefig(filename)
         plt.close(fig)
 
