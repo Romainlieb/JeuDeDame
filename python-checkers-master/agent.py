@@ -63,14 +63,15 @@ class Agent :
     def step(self, game_control,state, action):
         terminated = False
         
-
+        
         #self.display_board_console(game_control.board)
         reward = 0
         game_control.board.lastReward = 0
         turn = game_control.get_turn()
         oppositeTurn = 'W' if turn == 'B' else 'B'
         #print(f"Tour de {'Blancs' if turn == 'W' else 'Noirs'}")
-
+        enemiePieces = game_control.board.get_piecesByColor(oppositeTurn)
+        allyPieces = game_control.board.get_piecesByColor(turn)
         exitList = (-1,-1)
 
         noMove = all(x == y for x, y in zip(action, exitList))
@@ -81,14 +82,19 @@ class Agent :
             game_control.winner = 'W' if turn == 'B' else 'B'
             #print(game_control.get_winner())
             terminated = True
-            enemiePieces = game_control.board.get_piecesByColor(oppositeTurn)
-            allyPieces = game_control.board.get_piecesByColor(turn)
+            
             if(len(allyPieces)!=0 and len(allyPieces)>len(enemiePieces)):
                 reward = -50
             elif(len(allyPieces)!=0 and len(allyPieces)<len(enemiePieces)):
                 reward = 50
             else:
                 reward = -100
+                
+            if reward > -50 and turn == 'W' :
+                self.nbVictoryWhite += 1
+            elif reward != -100:
+                self.nbVictoryBlack += 1
+                        
 
         #print(f"Action choisie par {'IA Blancs' if turn == 'W' else 'IA Noirs'} : {action}")
 
@@ -98,14 +104,16 @@ class Agent :
             game_control.board.move_piece(*action)
             isDameMove =  game_control.board.lastMoveIsDame
             if game_control.get_all_possible_moves(oppositeTurn) == []:
-                enemiePieces = game_control.board.get_piecesByColor(oppositeTurn)
-                allyPieces = game_control.board.get_piecesByColor(turn)
                 if(len(enemiePieces)!=0 and len(enemiePieces)>len(allyPieces)):
                     reward = 50
                 elif(len(enemiePieces)!=0 and len(enemiePieces)<len(allyPieces)):
                     reward = -50
                 else:
                     reward = 100
+
+                
+                
+
                 #print("No more possible moves for the opponent")
         
         
@@ -140,13 +148,17 @@ class Agent :
         num_action = 183+1
 
         policy_net = DQN(num_state, num_action).to(device)
-
+        try :
+            policy_net.load_model("modelLoad.pth")
+            print("Model loaded successfully")
+        except:
+            print("No model to load, creating a new one")
         epsilonHistory = []
         reward_per_episode = []
         if is_training:
             memory = ReplayMemory(maxlen = 10000)
             epsilon = 1.0
-            epsilon_decay = 0.999995
+            epsilon_decay = 0.99995
             epsilon_min = 0.01
             target_net = DQN(num_state, num_action).to(device)
             target_net.load_state_dict(policy_net.state_dict())
@@ -155,9 +167,8 @@ class Agent :
             learning_rate = 0.001
             self.optimizer = torch.optim.Adam(policy_net.parameters(), lr = learning_rate)
 
-            
         start = time.perf_counter()
-        for episode in range(1000000):
+        for episode in count():         
             terminated = False
             episode_reward = 0.0
             gameControl = GameControl()
@@ -239,8 +250,12 @@ class Agent :
                 # actionChosen = policy_net(state.unsqueeze(dim=0)).squeeze()
                 # actionQList = actionChosen.tolist()
                 #print(f"Episode {episode} : Reward = {episode_reward}, Epsilon = {epsilon}, Action Q-Values = {actionQList}")
+                
             if episode % 5000 == 0 and episode != 0:    
-                print("Iteration: "+str(episode),"Epsilon: "+str(epsilon),"Victoire Blancs: "+str(self.nbVictoryWhite),"Victoire Noirs: "+str(self.nbVictoryBlack),"Matchs Nuls: "+str(self.nbDraw))
+                print("Iteration: "+str(episode),"Epsilon: "+str(epsilon),"Victoire Blancs depuis le dernier episode: "+str(self.nbVictoryWhite),"Victoire Noirs: "+str(self.nbVictoryBlack),"Matchs Nuls: "+str(self.nbDraw))
+                self.nbVictoryWhite = 0
+                self.nbVictoryBlack = 0
+                self.nbDraw = 0
                 end = time.perf_counter()
                 print(f"Temps d'exécution: {end - start} secondes")
                 mean_reward = np.zeros(len(reward_per_episode))

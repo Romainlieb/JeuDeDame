@@ -27,6 +27,7 @@ class DQN(nn.Module):
         self.fc1 = nn.Linear(state_dimension,hidden_dimension)
         self.fc2 = nn.Linear(hidden_dimension,hidden_dimension)
         self.fc3 = nn.Linear(hidden_dimension,action_dimension)
+        
 
     def forward(self,x):
         x = torchFunctionnal.relu(self.fc1(x))
