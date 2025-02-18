@@ -80,14 +80,20 @@ class Agent :
             game_control.winner = 'W' if turn == 'B' else 'B'
             #print(game_control.get_winner())
             terminated = True
-            enemiePieces = game_control.board.get_piecesByColor(oppositeTurn)
-            allyPieces = game_control.board.get_piecesByColor(turn)
+            enemiePieces = game_control.board.get_piecesByColor(oppositeTurn).copy()
+            allyPieces = game_control.board.get_piecesByColor(turn).copy()
             if(len(allyPieces)!=0 and len(allyPieces)>len(enemiePieces)):
                 reward = -50
             elif(len(allyPieces)!=0 and len(allyPieces)<len(enemiePieces)):
                 reward = 50
             else:
                 reward = -100
+                
+            if reward > -50 and turn == 'W' :
+                self.nbVictoryWhite += 1
+            elif reward != -100:
+                self.nbVictoryBlack += 1
+                        
 
         #print(f"Action choisie par {'IA Blancs' if turn == 'W' else 'IA Noirs'} : {action}")
 
@@ -97,14 +103,18 @@ class Agent :
             game_control.board.move_piece(*action)
             isDameMove =  game_control.board.lastMoveIsDame
             if game_control.get_all_possible_moves(oppositeTurn) == []:
-                enemiePieces = game_control.board.get_piecesByColor(oppositeTurn)
-                allyPieces = game_control.board.get_piecesByColor(turn)
+                enemiePieces = game_control.board.get_piecesByColor(oppositeTurn).copy()
+                allyPieces = game_control.board.get_piecesByColor(turn).copy()
                 if(len(enemiePieces)!=0 and len(enemiePieces)>len(allyPieces)):
                     reward = 50
                 elif(len(enemiePieces)!=0 and len(enemiePieces)<len(allyPieces)):
                     reward = -50
                 else:
                     reward = 100
+
+                
+                
+
                 #print("No more possible moves for the opponent")
         
         
