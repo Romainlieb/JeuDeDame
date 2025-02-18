@@ -139,13 +139,17 @@ class Agent :
         num_action = 183+1
 
         policy_net = DQN(num_state, num_action).to(device)
-
+        try :
+            policy_net.load_model("modelLoad.pth")
+            print("Model loaded successfully")
+        except:
+            print("No model to load, creating a new one")
         epsilonHistory = []
         reward_per_episode = []
         if is_training:
             memory = ReplayMemory(maxlen = 10000)
             epsilon = 1.0
-            epsilon_decay = 0.999995
+            epsilon_decay = 0.99995
             epsilon_min = 0.01
             target_net = DQN(num_state, num_action).to(device)
             target_net.load_state_dict(policy_net.state_dict())
@@ -154,7 +158,7 @@ class Agent :
             learning_rate = 0.001
             self.optimizer = torch.optim.Adam(policy_net.parameters(), lr = learning_rate)
        
-        for episode in range(1500000):
+        for episode in count():
             terminated = False
             episode_reward = 0.0
             gameControl = GameControl()
@@ -237,7 +241,10 @@ class Agent :
                 # actionQList = actionChosen.tolist()
                 #print(f"Episode {episode} : Reward = {episode_reward}, Epsilon = {epsilon}, Action Q-Values = {actionQList}")
             if episode % 5000 == 0:    
-                print("Iteration: "+str(episode),"Epsilon: "+str(epsilon),"Victoire Blancs: "+str(self.nbVictoryWhite),"Victoire Noirs: "+str(self.nbVictoryBlack),"Matchs Nuls: "+str(self.nbDraw))
+                print("Iteration: "+str(episode),"Epsilon: "+str(epsilon),"Victoire Blancs depuis le dernier episode: "+str(self.nbVictoryWhite),"Victoire Noirs: "+str(self.nbVictoryBlack),"Matchs Nuls: "+str(self.nbDraw))
+                self.nbVictoryWhite = 0
+                self.nbVictoryBlack = 0
+                self.nbDraw = 0
 
                 mean_reward = np.zeros(len(reward_per_episode))
                 for x in range(len(mean_reward)):
