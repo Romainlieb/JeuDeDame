@@ -1,6 +1,37 @@
 from utils import get_position_with_row_col
 
 class Piece:
+    """
+    A class to represent a piece in a checkers game.
+    Attributes
+    ----------
+    name : str
+        A string representing the piece's position, color, and king status (e.g., "16W").
+    has_eaten : bool
+        A boolean indicating if the piece has eaten another piece in its last move.
+    Methods
+    -------
+    get_name():
+        Returns the name of the piece.
+    get_position():
+        Returns the position of the piece.
+    get_color():
+        Returns the color of the piece.
+    get_has_eaten():
+        Returns whether the piece has eaten another piece in its last move.
+    is_king():
+        Returns whether the piece is a king.
+    set_position(new_position):
+        Sets a new position for the piece.
+    set_is_king(new_is_king):
+        Sets the king status of the piece.
+    set_has_eaten(has_eaten):
+        Sets the has_eaten attribute.
+    get_adjacent_squares(board):
+        Returns a list of coordinates for potential moves based on the current position and board state.
+    get_moves(board):
+        Returns a list of all possible moves for the piece, including potential captures.
+    """
     def __init__(self, name):
         # Example: <position><color><isKing?> 16WN
         self.name = name
@@ -33,7 +64,12 @@ class Piece:
 
     def set_has_eaten(self, has_eaten):
         self.has_eaten = has_eaten
-
+    def get_adjacent_squares_position(self,board):
+        adjSquares = self.get_adjacent_squares(board)
+        adjSquaresPosition = []
+        for square in adjSquares:
+            adjSquaresPosition.append(get_position_with_row_col(square[0], square[1]))
+        return adjSquaresPosition
     def get_adjacent_squares(self, board):
         # Receives a Board object, returns at max four squares, all of which are potential moves
         current_col = board.get_col_number(int(self.get_position()))
@@ -97,3 +133,5 @@ class Piece:
                 possible_moves.append({"position": str(new_position), "eats_piece": False})
         
         return possible_moves
+    
+    
